@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JKA Architecture - Extension Cost Calculator 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #FFFFFF;
+            padding: 40px 20px;
+            color: #191919;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #FFFFFF;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #19191920;
+        }
+        
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            font-size: 1.5rem;
+            color: #191919;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+            font-size: 1rem;
+            color: #191919;
+        }
+        
+        .form-section {
+            padding: 30px 0;
+            border-bottom: 1px solid #19191915;
+        }
+        
+        .section-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            font-size: 1.5rem;
+            color: #191919;
+            margin-bottom: 25px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+            font-size: 1rem;
+            color: #191919;
+        }
+        
+        .input-group input[type="number"],
+        .input-group input[type="text"],
+        .input-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #19191930;
+            border-radius: 4px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+            font-size: 1rem;
+            color: #191919;
+            background: #FFFFFF;
+            transition: all 0.3s;
+        }
+        
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #191919;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .checkbox-group label {
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+            font-size: 1rem;
+            color: #191919;
+        }
+        
+        .sub-input {
+            margin-left: 28px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .results {
+            background: #F9F9F9;
+            padding: 30px;
+            margin-top: 40px;
+            border-radius: 4px;
+        }
+        
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #19191915;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+            font-size: 1rem;
+        }
+        
+        .result-row.total {
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: #191919;
+            border-bottom: 2px solid #191919;
+            margin-top: 15px;
+            padding-top: 25px;
+        }
+        
+        .result-row.subtotal {
+            font-weight: 400;
+            color: #191919;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #19191930;
+        }
+        
+        .result-label {
+            color: #191919;
+        }
+        
+        .result-value {
+            font-weight: 400;
+            color: #191919;
+        }
+        
+        .range-indicator {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+            font-style: italic;
+            font-size: 0.75rem;
+            color: #191919;
+            opacity: 0.7;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            padding: 40px 0 20px 0;
+        }
+        
+        .btn {
+            padding: 0 30px;
+            height: 2rem;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #1919191C;
+            color: #191919;
+        }
+        
+        .btn:hover {
+            background: #FFFFFF;
+            box-shadow: 0 0 0 1px #191919;
+        }
+        
+        .btn-primary {
+            background: #191919;
+            color: #FFFFFF;
+        }
+        
+        .btn-primary:hover {
+            background: #000000;
+            box-shadow: none;
+        }
+        
+        .note {
+            background: #F9F9F9;
+            border-left: 2px solid #191919;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+            font-size: 0.875rem;
+            color: #191919;
+            line-height: 1.6;
+        }
+        
+        .hint {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+            font-style: italic;
+            font-size: 0.75rem;
+            color: #191919;
+            margin-top: 4px;
+            opacity: 0.7;
+        }
+
+        .fee-stage {
+            background: #F9F9F9;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .fee-stage-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            font-size: 0.875rem;
+            color: #191919;
+            margin-bottom: 10px;
+        }
+        
+        @media print {
+            .button-group {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Extension Cost Calculator</h1>
+            <p>Scotland 2025 | Professional Cost Estimate</p>
+        </div>
+        
+        <div class="form-section">
+            <div class="section-title">Client Information</div>
+            <div class="grid-2">
+                <div class="input-group">
+                    <label>Client Name</label>
+                    <input type="text" id="clientName" placeholder="Enter client name">
+                </div>
+                <div class="input-group">
+                    <label>Project Address</label>
+                    <input type="text" id="projectAddress" placeholder="Enter project address">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Date</label>
+                <input type="text" id="date" value="">
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <div class="section-title">Project Details</div>
+            
+            <div class="input-group">
+                <label>Extension Type</label>
+                <select id="extensionType">
+                    <option value="single">Single-storey extension</option>
+                    <option value="two">Two-storey extension</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label>Floor Area (m²)</label>
+                <input type="number" id="floorArea" placeholder="e.g., 20" min="1" step="0.1">
+            </div>
+            
+            <div class="input-group">
+                <label>Build Cost Range per m²</label>
+                <select id="costRange">
+                    <option value="low">Low (Single: £2,200 | Two-storey: £2,000)</option>
+                    <option value="mid" selected>Mid (Single: £2,700 | Two-storey: £2,350)</option>
+                    <option value="high">High (Single: £3,200 | Two-storey: £2,700)</option>
+                </select>
+            </div>
+            
+            <div class="note">
+                <strong>Build cost includes:</strong> foundations, drainage, walls, insulation, roof, standard windows/doors, first-fix electrics & plumbing, plasterboard/plaster, basic finishes.<br>
+                <strong>Not included:</strong> kitchens, bathrooms, high-end finishes, landscaping, professional fees, VAT.
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="includeKitchen">
+                <label for="includeKitchen">Include Kitchen</label>
+            </div>
+            <div class="sub-input" id="kitchenCostInput" style="display: none;">
+                <label>Kitchen Cost (£)</label>
+                <input type="number" id="kitchenCostValue" placeholder="Enter cost" min="0" value="6500">
+                <div class="hint">Typical range: £5,000 - £8,000 (avg. £6,500)</div>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="includeBathroom">
+                <label for="includeBathroom">Include Bathroom</label>
+            </div>
+            <div class="sub-input" id="bathroomCostInput" style="display: none;">
+                <label>Bathroom Cost (£)</label>
+                <input type="number" id="bathroomCostValue" placeholder="Enter cost" min="0" value="8500">
+                <div class="hint">Typical range: £7,000 - £10,000 (avg. £8,500)</div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <div class="section-title">Surveys & Site Investigation</div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="ordnanceMaps">
+                <label for="ordnanceMaps">Ordnance Survey Maps</label>
+            </div>
+            <div class="sub-input" id="ordnanceMapsInput" style="display: none;">
+                <label>Cost (£)</label>
+                <input type="number" id="ordnanceMapsCost" placeholder="25 - 75" min="0" value="50">
+                <div class="hint">Location and site plans (typical: £25-75)</div>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="measuredSurvey">
+                <label for="measuredSurvey">Measured Survey</label>
+            </div>
+            <div class="sub-input" id="measuredSurveyInput" style="display: none;">
+                <label>Cost (£)</label>
+                <input type="number" id="measuredSurveyCost" placeholder="300 - 800" min="0" value="500">
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="groundSurvey">
+                <label for="groundSurvey">Ground Survey</label>
+            </div>
+            <div class="sub-input" id="groundSurveyInput" style="display: none;">
+                <label>Cost (£)</label>
+                <input type="number" id="groundSurveyCost" placeholder="500 - 1,200" min="0" value="800">
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="billOfQuantities">
+                <label for="billOfQuantities">Bill of Quantities</label>
+            </div>
+            <div class="sub-input" id="billOfQuantitiesInput" style="display: none;">
+                <label>Cost (£)</label>
+                <input type="number" id="billOfQuantitiesCost" placeholder="500 - 2,000" min="0" value="1000">
+                <div class="hint">Typical range: £500 - £2,000</div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <div class="section-title">Professional Fees</div>
+            
+            <div class="input-group">
+                <label>Structural Engineer Fee (£)</label>
+                <input type="number" id="engineerFee" placeholder="900 - 2,000" min="0" value="1500">
+                <div class="hint">Typical range: £900 - £2,000</div>
+            </div>
+            
+            <div class="note">
+                <strong>Architect fees by RIBA stage:</strong> Fees can be calculated as percentage of construction cost or as fixed fees for each stage.
+            </div>
+            
+            <div class="fee-stage">
+                <div class="fee-stage-title">Concept Design (RIBA Stage 2)</div>
+                <div class="input-group">
+                    <label>Calculation Method</label>
+                    <select id="conceptFeeMethod">
+                        <option value="percentage">Percentage of construction cost</option>
+                        <option value="fixed">Fixed fee</option>
+                    </select>
+                </div>
+                <div class="input-group" id="conceptPercentageGroup">
+                    <label>Percentage (%)</label>
+                    <input type="number" id="conceptPercentage" placeholder="2-3%" min="0" max="100" step="0.1" value="2.5">
+                </div>
+                <div class="input-group" id="conceptFixedGroup" style="display: none;">
+                    <label>Fixed Fee (£)</label>
+                    <input type="number" id="conceptFixed" placeholder="Enter fixed fee" min="0">
+                </div>
+            </div>
+
+            <div class="fee-stage">
+                <div class="fee-stage-title">Planning Application (RIBA Stage 3)</div>
+                <div class="input-group">
+                    <label>Calculation Method</label>
+                    <select id="planningDesignFeeMethod">
+                        <option value="percentage">Percentage of construction cost</option>
+                        <option value="fixed">Fixed fee</option>
+                    </select>
+                </div>
+                <div class="input-group" id="planningDesignPercentageGroup">
+                    <label>Percentage (%)</label>
+                    <input type="number" id="planningDesignPercentage" placeholder="3-4%" min="0" max="100" step="0.1" value="3.5">
+                </div>
+                <div class="input-group" id="planningDesignFixedGroup" style="display: none;">
+                    <label>Fixed Fee (£)</label>
+                    <input type="number" id="planningDesignFixed" placeholder="Enter fixed fee" min="0">
+                </div>
+            </div>
+
+            <div class="fee-stage">
+                <div class="fee-stage-title">Building Warrant (RIBA Stage 4)</div>
+                <div class="input-group">
+                    <label>Calculation Method</label>
+                    <select id="warrantDesignFeeMethod">
+                        <option value="percentage">Percentage of construction cost</option>
+                        <option value="fixed">Fixed fee</option>
+                    </select>
+                </div>
+                <div class="input-group" id="warrantDesignPercentageGroup">
+                    <label>Percentage (%)</label>
+                    <input type="number" id="warrantDesignPercentage" placeholder="3-4%" min="0" max="100" step="0.1" value="3.5">
+                </div>
+                <div class="input-group" id="warrantDesignFixedGroup" style="display: none;">
+                    <label>Fixed Fee (£)</label>
+                    <input type="number" id="warrantDesignFixed" placeholder="Enter fixed fee" min="0">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <div class="section-title">Statutory Fees</div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="planningRequired">
+                <label for="planningRequired">Planning Permission Required</label>
+            </div>
+            <div class="sub-input" id="planningFeeInput" style="display: none;">
+                <label>Planning Fee (£)</label>
+                <input type="number" id="planningFee" placeholder="~300 - 500" min="0" value="400">
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="warrantRequired" checked>
+                <label for="warrantRequired">Building Warrant Required</label>
+            </div>
+            <div class="sub-input" id="warrantFeeInput">
+                <label>Building Warrant Fee (£)</label>
+                <input type="number" id="warrantFee" placeholder="~300 - 500" min="0" value="400">
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <div class="section-title">Contingency</div>
+            
+            <div class="input-group">
+                <label>Contingency Percentage (% of construction cost)</label>
+                <select id="contingencyPercent">
+                    <option value="10">10% (Simple projects)</option>
+                    <option value="12.5">12.5%</option>
+                    <option value="15" selected>15% (Standard)</option>
+                    <option value="17.5">17.5%</option>
+                    <option value="20">20% (Complex projects)</option>
+                    <option value="25">25% (Very complex/two-storey)</option>
+                </select>
+            </div>
+            
+            <div class="note">
+                Contingency covers unexpected costs during construction (site conditions, specification changes, unforeseen structural work).
+            </div>
+        </div>
+        
+        <div class="results">
+            <div class="section-title">Cost Breakdown</div>
+            
+            <div class="result-row">
+                <span class="result-label">Build Cost (ex VAT)</span>
+                <span class="result-value" id="buildCost">£0</span>
+            </div>
+            
+            <div class="result-row">
+                <span class="result-label">Kitchen</span>
+                <span class="result-value" id="kitchenCost">£0</span>
+            </div>
+            
+            <div class="result-row">
+                <span class="result-label">Bathroom</span>
+                <span class="result-value" id="bathroomCost">£0</span>
+            </div>
+            
+            <div class="result-row subtotal">
+                <span class="result-label">Total Construction Cost (ex VAT)</span>
+                <span class="result-value" id="totalConstruction">£0</span>
+            </div>
+            
+            <div class="result-row">
+                <span class="result-label">Contingency <span class="range-indicator" id="contingencyLabel"></span></span>
+                <span class="result-value" id="contingencyCost">£0</span>
+            </div>
+            
+            <div class="result-row">
+                <span class="result-label">Construction + Contingency (ex VAT)</span>
+                <span class="result-value" id="constructionWithContingency">£0</span>
+            </div>
+            
+            <div class="result-row">
+                <span class="result-label">VAT (20%)</span>
+                <span class="result-value" id="vatCost">£0</span>
+            </div>
+            
+            <div class="result-row subtotal">
+                <span class="result-label">Total Construction (inc VAT)</span>
+                <span class="result-value" id="totalConstructionVAT">£0</span>
+            </div>
+            
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #19191920;">
+                <div class="result-row">
+                    <span class="result-label">Ordnance Survey Maps</span>
+                    <span class="result-value" id="ordnanceMapsDisplay">£0</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Measured Survey</span>
+                    <span class="result-value" id="measuredSurveyDisplay">£0</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Ground Survey</span>
+                    <span class="result-value" id="groundSurveyDisplay">£0</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Bill of Quantities</span>
+                    <span class="result-value" id="billOfQuantitiesDisplay">£0</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Structural Engineer</span>
+                    <span class="result-value" id="engineerDisplay">£0</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Architect - Concept Design <span class="range-indicator" id="conceptMethod"></span></span>
+                    <span class="result-value" id="conceptDisplay">£0</span>
+                </div>
+
+                <div class="result-row">
+                    <span class="result-label">Architect - Planning Application <span class="range-indicator" id="planningDesignMethod"></span></span>
+                    <span class="result-value" id="planningDesignDisplay">£0</span>
+                </div>
+
+                <div class="result-row">
+                    <span class="result-label">Architect - Building Warrant <span class="range-indicator" id="warrantDesignMethod"></span></span>
+                    <span class="result-value" id="warrantDesignDisplay">£0</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Planning Permission Fee</span>
+                    <span class="result-value" id="planningDisplay">£0</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="result-label">Building Warrant Fee</span>
+                    <span class="result-value" id="warrantDisplay">£0</span>
+                </div>
+                
+                <div class="result-row subtotal">
+                    <span class="result-label">Total Professional & Statutory Fees</span>
+                    <span class="result-value" id="totalFees">£0</span>
+                </div>
+            </div>
+            
+            <div class="result-row total">
+                <span class="result-label">TOTAL PROJECT COST (inc VAT)</span>
+                <span class="result-value" id="grandTotal">£0</span>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="generateExcel()">Download Excel</button>
+            <button class="btn" onclick="window.print()">Print PDF</button>
+            <button class="btn" onclick="resetForm()">Reset</button>
+        </div>
+    </div>
+    
+    <script>
+        // Set current date
+        document.getElementById('date').value = new Date().toLocaleDateString('en-GB');
+        
+        // Toggle visibility for checkboxes
+        function setupCheckboxToggle(checkboxId, inputId) {
+            const checkbox = document.getElementById(checkboxId);
+            const input = document.getElementById(inputId);
+            
+            checkbox.addEventListener('change', function() {
+                input.style.display = this.checked ? 'block' : 'none';
+                calculate();
+            });
+        }
+        
+        setupCheckboxToggle('includeKitchen', 'kitchenCostInput');
+        setupCheckboxToggle('includeBathroom', 'bathroomCostInput');
+        setupCheckboxToggle('ordnanceMaps', 'ordnanceMapsInput');
+        setupCheckboxToggle('measuredSurvey', 'measuredSurveyInput');
+        setupCheckboxToggle('groundSurvey', 'groundSurveyInput');
+        setupCheckboxToggle('billOfQuantities', 'billOfQuantitiesInput');
+        setupCheckboxToggle('planningRequired', 'planningFeeInput');
+        setupCheckboxToggle('warrantRequired', 'warrantFeeInput');
+        
+        // Toggle architect fee input methods for each stage
+        function setupFeeMethodToggle(methodId, percentageGroupId, fixedGroupId) {
+            const method = document.getElementById(methodId);
+            const percentageGroup = document.getElementById(percentageGroupId);
+            const fixedGroup = document.getElementById(fixedGroupId);
+            
+            method.addEventListener('change', function() {
+                if (this.value === 'percentage') {
+                    percentageGroup.style.display = 'block';
+                    fixedGroup.style.display = 'none';
+                } else {
+                    percentageGroup.style.display = 'none';
+                    fixedGroup.style.display = 'block';
+                }
+                calculate();
+            });
+        }
+        
+        setupFeeMethodToggle('conceptFeeMethod', 'conceptPercentageGroup', 'conceptFixedGroup');
+        setupFeeMethodToggle('planningDesignFeeMethod', 'planningDesignPercentageGroup', 'planningDesignFixedGroup');
+        setupFeeMethodToggle('warrantDesignFeeMethod', 'warrantDesignPercentageGroup', 'warrantDesignFixedGroup');
+        
+        // Add event listeners to all inputs
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('input', calculate);
+            element.addEventListener('change', calculate);
+        });
+        
+        function calculate() {
+            const extensionType = document.getElementById('extensionType').value;
+            const floorArea = parseFloat(document.getElementById('floorArea').value) || 0;
+            const costRange = document.getElementById('costRange').value;
+            
+            // Determine cost per m²
+            let costPerSqm = 0;
+            if (extensionType === 'single') {
+                costPerSqm = costRange === 'low' ? 2200 : costRange === 'mid' ? 2700 : 3200;
+            } else {
+                costPerSqm = costRange === 'low' ? 2000 : costRange === 'mid' ? 2350 : 2700;
+            }
+            
+            // Calculate build cost
+            const buildCost = floorArea * costPerSqm;
+            
+            // Kitchen and bathroom
+            const includeKitchen = document.getElementById('includeKitchen').checked;
+            const includeBathroom = document.getElementById('includeBathroom').checked;
+            
+            const kitchenCost = includeKitchen ? (parseFloat(document.getElementById('kitchenCostValue').value) || 0) : 0;
+            const bathroomCost = includeBathroom ? (parseFloat(document.getElementById('bathroomCostValue').value) || 0) : 0;
+            
+            // Total construction cost
+            const totalConstruction = buildCost + kitchenCost + bathroomCost;
+            
+            // Contingency (on construction cost only)
+            const contingencyPercent = parseFloat(document.getElementById('contingencyPercent').value);
+            const contingencyCost = totalConstruction * (contingencyPercent / 100);
+            
+            // Construction with contingency
+            const constructionWithContingency = totalConstruction + contingencyCost;
+            
+            // VAT
+            const vatCost = constructionWithContingency * 0.20;
+            const totalConstructionVAT = constructionWithContingency + vatCost;
+            
+            // Survey fees
+            const ordnanceMaps = document.getElementById('ordnanceMaps').checked ? 
+                (parseFloat(document.getElementById('ordnanceMapsCost').value) || 0) : 0;
+            
+            const measuredSurvey = document.getElementById('measuredSurvey').checked ? 
+                (parseFloat(document.getElementById('measuredSurveyCost').value) || 0) : 0;
+            
+            const groundSurvey = document.getElementById('groundSurvey').checked ? 
+                (parseFloat(document.getElementById('groundSurveyCost').value) || 0) : 0;
+            
+            const billOfQuantities = document.getElementById('billOfQuantities').checked ? 
+                (parseFloat(document.getElementById('billOfQuantitiesCost').value) || 0) : 0;
+            
+            const engineerFee = parseFloat(document.getElementById('engineerFee').value) || 0;
+            
+            // Architect fees by stage
+            let conceptFee = 0;
+            const conceptMethod = document.getElementById('conceptFeeMethod').value;
+            if (conceptMethod === 'percentage') {
+                const conceptPercent = parseFloat(document.getElementById('conceptPercentage').value) || 0;
+                conceptFee = totalConstruction * (conceptPercent / 100);
+                document.getElementById('conceptMethod').textContent = `(${conceptPercent}%)`;
+            } else {
+                conceptFee = parseFloat(document.getElementById('conceptFixed').value) || 0;
+                document.getElementById('conceptMethod').textContent = '(fixed)';
+            }
+            
+            let planningDesignFee = 0;
+            const planningDesignMethod = document.getElementById('planningDesignFeeMethod').value;
+            if (planningDesignMethod === 'percentage') {
+                const planningDesignPercent = parseFloat(document.getElementById('planningDesignPercentage').value) || 0;
+                planningDesignFee = totalConstruction * (planningDesignPercent / 100);
+                document.getElementById('planningDesignMethod').textContent = `(${planningDesignPercent}%)`;
+            } else {
+                planningDesignFee = parseFloat(document.getElementById('planningDesignFixed').value) || 0;
+                document.getElementById('planningDesignMethod').textContent = '(fixed)';
+            }
+            
+            let warrantDesignFee = 0;
+            const warrantDesignMethod = document.getElementById('warrantDesignFeeMethod').value;
+            if (warrantDesignMethod === 'percentage') {
+                const warrantDesignPercent = parseFloat(document.getElementById('warrantDesignPercentage').value) || 0;
+                warrantDesignFee = totalConstruction * (warrantDesignPercent / 100);
+                document.getElementById('warrantDesignMethod').textContent = `(${warrantDesignPercent}%)`;
+            } else {
+                warrantDesignFee = parseFloat(document.getElementById('warrantDesignFixed').value) || 0;
+                document.getElementById('warrantDesignMethod').textContent = '(fixed)';
+            }
+            
+            // Statutory fees
+            const planningFee = document.getElementById('planningRequired').checked ? 
+                (parseFloat(document.getElementById('planningFee').value) || 0) : 0;
+            
+            const warrantFee = document.getElementById('warrantRequired').checked ? 
+                (parseFloat(document.getElementById('warrantFee').value) || 0) : 0;
+            
+            const totalFees = ordnanceMaps + measuredSurvey + groundSurvey + billOfQuantities + 
+                             engineerFee + conceptFee + planningDesignFee + warrantDesignFee + 
+                             planningFee + warrantFee;
+            
+            // Grand total
+            const grandTotal = totalConstructionVAT + totalFees;
+            
+            // Update display
+            document.getElementById('buildCost').textContent = formatCurrency(buildCost);
+            document.getElementById('kitchenCost').textContent = formatCurrency(kitchenCost);
+            document.getElementById('bathroomCost').textContent = formatCurrency(bathroomCost);
+            
+            document.getElementById('totalConstruction').textContent = formatCurrency(totalConstruction);
+            document.getElementById('contingencyCost').textContent = formatCurrency(contingencyCost);
+            document.getElementById('contingencyLabel').textContent = `(${contingencyPercent}%)`;
+            document.getElementById('constructionWithContingency').textContent = formatCurrency(constructionWithContingency);
+            document.getElementById('vatCost').textContent = formatCurrency(vatCost);
+            document.getElementById('totalConstructionVAT').textContent = formatCurrency(totalConstructionVAT);
+            
+            document.getElementById('ordnanceMapsDisplay').textContent = formatCurrency(ordnanceMaps);
+            document.getElementById('measuredSurveyDisplay').textContent = formatCurrency(measuredSurvey);
+            document.getElementById('groundSurveyDisplay').textContent = formatCurrency(groundSurvey);
+            document.getElementById('billOfQuantitiesDisplay').textContent = formatCurrency(billOfQuantities);
+            document.getElementById('engineerDisplay').textContent = formatCurrency(engineerFee);
+            document.getElementById('conceptDisplay').textContent = formatCurrency(conceptFee);
+            document.getElementById('planningDesignDisplay').textContent = formatCurrency(planningDesignFee);
+            document.getElementById('warrantDesignDisplay').textContent = formatCurrency(warrantDesignFee);
+            document.getElementById('planningDisplay').textContent = formatCurrency(planningFee);
+            document.getElementById('warrantDisplay').textContent = formatCurrency(warrantFee);
+            document.getElementById('totalFees').textContent = formatCurrency(totalFees);
+            
+            document.getElementById('grandTotal').textContent = formatCurrency(grandTotal);
+        }
+        
+        function formatCurrency(value) {
+            return '£' + Math.round(value).toLocaleString('en-GB');
+        }
+        
+        function generateExcel() {
+            const data = collectData();
+            
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet([
+                ['JKA ARCHITECTURE - EXTENSION COST ESTIMATE'],
+                ['Scotland 2025'],
+                [''],
+                ['CLIENT INFORMATION'],
+                ['Client Name:', data.clientName],
+                ['Project Address:', data.projectAddress],
+                ['Date:', data.date],
+                [''],
+                ['PROJECT DETAILS'],
+                ['Extension Type:', data.extensionType],
+                ['Floor Area (m²):', data.floorArea],
+                ['Cost per m²:', '£' + data.costPerSqm],
+                [''],
+                ['COST BREAKDOWN'],
+                ['Build Cost (ex VAT):', '£' + data.buildCost.toLocaleString()],
+                ['Kitchen:', '£' + data.kitchenCost.toLocaleString()],
+                ['Bathroom:', '£' + data.bathroomCost.toLocaleString()],
+                ['Total Construction (ex VAT):', '£' + data.totalConstruction.toLocaleString()],
+                [''],
+                ['Contingency (' + data.contingencyPercent + '%):', '£' + data.contingencyCost.toLocaleString()],
+                ['Construction + Contingency (ex VAT):', '£' + data.constructionWithContingency.toLocaleString()],
+                ['VAT (20%):', '£' + data.vatCost.toLocaleString()],
+                ['Total Construction (inc VAT):', '£' + data.totalConstructionVAT.toLocaleString()],
+                [''],
+                ['PROFESSIONAL & STATUTORY FEES'],
+                ['Ordnance Survey Maps:', '£' + data.ordnanceMaps.toLocaleString()],
+                ['Measured Survey:', '£' + data.measuredSurvey.toLocaleString()],
+                ['Ground Survey:', '£' + data.groundSurvey.toLocaleString()],
+                ['Bill of Quantities:', '£' + data.billOfQuantities.toLocaleString()],
+                ['Structural Engineer:', '£' + data.engineerFee.toLocaleString()],
+                ['Architect - Concept Design:', '£' + data.conceptFee.toLocaleString()],
+                ['Architect - Planning Application:', '£' + data.planningDesignFee.toLocaleString()],
+                ['Architect - Building Warrant:', '£' + data.warrantDesignFee.toLocaleString()],
+                ['Planning Permission Fee:', '£' + data.planningFee.toLocaleString()],
+                ['Building Warrant Fee:', '£' + data.warrantFee.toLocaleString()],
+                ['Total Fees:', '£' + data.totalFees.toLocaleString()],
+                [''],
+                ['TOTAL PROJECT COST (inc VAT):', '£' + data.grandTotal.toLocaleString()],
+                [''],
+                [''],
+                ['Notes:'],
+                ['Build cost includes: foundations, drainage, walls, insulation, roof, standard windows/doors,'],
+                ['first-fix electrics & plumbing, plasterboard/plaster, basic finishes.'],
+                [''],
+                ['Not included: kitchens, bathrooms, high-end finishes, landscaping beyond basics.'],
+                [''],
+                ['Kitchen range: £5,000 - £8,000 (avg. £6,500)'],
+                ['Bathroom range: £7,000 - £10,000 (avg. £8,500)'],
+                ['Ordnance Survey Maps: £25 - £75'],
+                ['Bill of Quantities range: £500 - £2,000'],
+                [''],
+                ['Architect fees by RIBA stage:'],
+                ['- Concept Design (Stage 2): typically 2-3% of construction cost'],
+                ['- Planning Application (Stage 3): typically 3-4% of construction cost'],
+                ['- Building Warrant (Stage 4): typically 3-4% of construction cost'],
+                [''],
+                ['This estimate is indicative and based on typical market rates for Scotland in 2025.'],
+                ['Final costs depend on specification, site conditions, and contractor pricing.']
+            ]);
+            
+            ws['!cols'] = [{ wch: 40 }, { wch: 20 }];
+            
+            XLSX.utils.book_append_sheet(wb, ws, 'Cost Estimate');
+            
+            const filename = `JKA_Extension_Cost_Estimate_${data.clientName.replace(/\s+/g, '_') || 'Client'}_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, filename);
+        }
+        
+        function collectData() {
+            const extensionType = document.getElementById('extensionType').value;
+            const floorArea = parseFloat(document.getElementById('floorArea').value) || 0;
+            const costRange = document.getElementById('costRange').value;
+            
+            let costPerSqm = 0;
+            if (extensionType === 'single') {
+                costPerSqm = costRange === 'low' ? 2200 : costRange === 'mid' ? 2700 : 3200;
+            } else {
+                costPerSqm = costRange === 'low' ? 2000 : costRange === 'mid' ? 2350 : 2700;
+            }
+            
+            const buildCost = Math.round(floorArea * costPerSqm);
+            const kitchenCost = document.getElementById('includeKitchen').checked ? 
+                Math.round(parseFloat(document.getElementById('kitchenCostValue').value) || 0) : 0;
+            const bathroomCost = document.getElementById('includeBathroom').checked ? 
+                Math.round(parseFloat(document.getElementById('bathroomCostValue').value) || 0) : 0;
+            const totalConstruction = buildCost + kitchenCost + bathroomCost;
+            
+            const contingencyPercent = parseFloat(document.getElementById('contingencyPercent').value);
+            const contingencyCost = Math.round(totalConstruction * (contingencyPercent / 100));
+            const constructionWithContingency = totalConstruction + contingencyCost;
+            const vatCost = Math.round(constructionWithContingency * 0.20);
+            const totalConstructionVAT = constructionWithContingency + vatCost;
+            
+            const ordnanceMaps = document.getElementById('ordnanceMaps').checked ? 
+                Math.round(parseFloat(document.getElementById('ordnanceMapsCost').value) || 0) : 0;
+            const measuredSurvey = document.getElementById('measuredSurvey').checked ? 
+                Math.round(parseFloat(document.getElementById('measuredSurveyCost').value) || 0) : 0;
+            const groundSurvey = document.getElementById('groundSurvey').checked ? 
+                Math.round(parseFloat(document.getElementById('groundSurveyCost').value) || 0) : 0;
+            const billOfQuantities = document.getElementById('billOfQuantities').checked ? 
+                Math.round(parseFloat(document.getElementById('billOfQuantitiesCost').value) || 0) : 0;
+            const engineerFee = Math.round(parseFloat(document.getElementById('engineerFee').value) || 0);
+            
+            let conceptFee = 0;
+            if (document.getElementById('conceptFeeMethod').value === 'percentage') {
+                const percent = parseFloat(document.getElementById('conceptPercentage').value) || 0;
+                conceptFee = Math.round(totalConstruction * (percent / 100));
+            } else {
+                conceptFee = Math.round(parseFloat(document.getElementById('conceptFixed').value) || 0);
+            }
+            
+            let planningDesignFee = 0;
+            if (document.getElementById('planningDesignFeeMethod').value === 'percentage') {
+                const percent = parseFloat(document.getElementById('planningDesignPercentage').value) || 0;
+                planningDesignFee = Math.round(totalConstruction * (percent / 100));
+            } else {
+                planningDesignFee = Math.round(parseFloat(document.getElementById('planningDesignFixed').value) || 0);
+            }
+            
+            let warrantDesignFee = 0;
+            if (document.getElementById('warrantDesignFeeMethod').value === 'percentage') {
+                const percent = parseFloat(document.getElementById('warrantDesignPercentage').value) || 0;
+                warrantDesignFee = Math.round(totalConstruction * (percent / 100));
+            } else {
+                warrantDesignFee = Math.round(parseFloat(document.getElementById('warrantDesignFixed').value) || 0);
+            }
+            
+            const planningFee = document.getElementById('planningRequired').checked ? 
+                Math.round(parseFloat(document.getElementById('planningFee').value) || 0) : 0;
+            const warrantFee = document.getElementById('warrantRequired').checked ? 
+                Math.round(parseFloat(document.getElementById('warrantFee').value) || 0) : 0;
+            
+            const totalFees = ordnanceMaps + measuredSurvey + groundSurvey + billOfQuantities + 
+                             engineerFee + conceptFee + planningDesignFee + warrantDesignFee + 
+                             planningFee + warrantFee;
+            const grandTotal = totalConstructionVAT + totalFees;
+            
+            return {
+                clientName: document.getElementById('clientName').value || 'Not specified',
+                projectAddress: document.getElementById('projectAddress').value || 'Not specified',
+                date: document.getElementById('date').value,
+                extensionType: extensionType === 'single' ? 'Single-storey' : 'Two-storey',
+                floorArea: floorArea,
+                costPerSqm: costPerSqm,
+                buildCost: buildCost,
+                kitchenCost: kitchenCost,
+                bathroomCost: bathroomCost,
+                totalConstruction: totalConstruction,
+                contingencyPercent: contingencyPercent,
+                contingencyCost: contingencyCost,
+                constructionWithContingency: constructionWithContingency,
+                vatCost: vatCost,
+                totalConstructionVAT: totalConstructionVAT,
+                ordnanceMaps: ordnanceMaps,
+                measuredSurvey: measuredSurvey,
+                groundSurvey: groundSurvey,
+                billOfQuantities: billOfQuantities,
+                engineerFee: engineerFee,
+                conceptFee: conceptFee,
+                planningDesignFee: planningDesignFee,
+                warrantDesignFee: warrantDesignFee,
+                planningFee: planningFee,
+                warrantFee: warrantFee,
+                totalFees: totalFees,
+                grandTotal: grandTotal
+            };
+        }
+        
+        function resetForm() {
+            if (confirm('Are you sure you want to reset all values?')) {
+                document.getElementById('clientName').value = '';
+                document.getElementById('projectAddress').value = '';
+                document.getElementById('date').value = new Date().toLocaleDateString('en-GB');
+                document.getElementById('extensionType').value = 'single';
+                document.getElementById('floorArea').value = '';
+                document.getElementById('costRange').value = 'mid';
+                
+                document.getElementById('includeKitchen').checked = false;
+                document.getElementById('includeBathroom').checked = false;
+                document.getElementById('kitchenCostValue').value = '6500';
+                document.getElementById('bathroomCostValue').value = '8500';
+                document.getElementById('kitchenCostInput').style.display = 'none';
+                document.getElementById('bathroomCostInput').style.display = 'none';
+                
+                document.getElementById('ordnanceMaps').checked = false;
+                document.getElementById('measuredSurvey').checked = false;
+                document.getElementById('groundSurvey').checked = false;
+                document.getElementById('billOfQuantities').checked = false;
+                document.getElementById('ordnanceMapsInput').style.display = 'none';
+                document.getElementById('measuredSurveyInput').style.display = 'none';
+                document.getElementById('groundSurveyInput').style.display = 'none';
+                document.getElementById('billOfQuantitiesInput').style.display = 'none';
+                document.getElementById('ordnanceMapsCost').value = '50';
+                document.getElementById('measuredSurveyCost').value = '500';
+                document.getElementById('groundSurveyCost').value = '800';
+                document.getElementById('billOfQuantitiesCost').value = '1000';
+                
+                document.getElementById('engineerFee').value = '1500';
+                
+                document.getElementById('conceptFeeMethod').value = 'percentage';
+                document.getElementById('conceptPercentage').value = '2.5';
+                document.getElementById('conceptFixed').value = '';
+                document.getElementById('conceptPercentageGroup').style.display = 'block';
+                document.getElementById('conceptFixedGroup').style.display = 'none';
+                
+                document.getElementById('planningDesignFeeMethod').value = 'percentage';
+                document.getElementById('planningDesignPercentage').value = '3.5';
+                document.getElementById('planningDesignFixed').value = '';
+                document.getElementById('planningDesignPercentageGroup').style.display = 'block';
+                document.getElementById('planningDesignFixedGroup').style.display = 'none';
+                
+                document.getElementById('warrantDesignFeeMethod').value = 'percentage';
+                document.getElementById('warrantDesignPercentage').value = '3.5';
+                document.getElementById('warrantDesignFixed').value = '';
+                document.getElementById('warrantDesignPercentageGroup').style.display = 'block';
+                document.getElementById('warrantDesignFixedGroup').style.display = 'none';
+                
+                document.getElementById('planningRequired').checked = false;
+                document.getElementById('warrantRequired').checked = true;
+                document.getElementById('planningFeeInput').style.display = 'none';
+                document.getElementById('warrantFeeInput').style.display = 'block';
+                document.getElementById('planningFee').value = '400';
+                document.getElementById('warrantFee').value = '400';
+                
+                document.getElementById('contingencyPercent').value = '15';
+                
+                calculate();
+            }
+        }
+        
+        // Initial calculation
+        calculate();
+    </script>
+</body>
+</html>
