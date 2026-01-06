@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JKA Architecture - Extension Cost Calculator 2025</title>
+    <title>JKA Architecture - Extension Cost Calculator 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -270,7 +270,7 @@
     <div class="container">
         <div class="header">
             <h1>Extension Cost Calculator</h1>
-            <p>Scotland 2025 | Professional Cost Estimate</p>
+            <p>Scotland 2026 | Professional Cost Estimate</p>
         </div>
         
         <div class="form-section">
@@ -387,10 +387,14 @@
         <div class="form-section">
             <div class="section-title">Professional Fees</div>
             
-            <div class="input-group">
-                <label>Structural Engineer Fee (£)</label>
-                <input type="number" id="engineerFee" placeholder="900 - 2,000" min="0" value="1500">
-                <div class="hint">Typical range: £900 - £2,000</div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="includeEngineer">
+                <label for="includeEngineer">Structural Engineer</label>
+            </div>
+        <div class="sub-input" id="engineerFeeInput" style="display: none;">
+            <label>Fee (£)</label>
+            <input type="number" id="engineerFee" placeholder="900 - 2,000" min="0" value="1500">
+            <div class="hint">Typical range: £900 - £2,000</div>
             </div>
             
             <div class="note">
@@ -453,6 +457,77 @@
                     <input type="number" id="warrantDesignFixed" placeholder="Enter fixed fee" min="0">
                 </div>
             </div>
+            <div class="fee-stage">
+                <div class="fee-stage-title">Tender Support (RIBA Stage 5) - Optional</div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="includeTender">
+                    <label for="includeTender">Include Tender Stage</label>
+                </div>
+                <div id="tenderFeeSection" style="display: none; margin-top: 10px;">
+                    <div class="input-group">
+                        <label>Calculation Method</label>
+                        <select id="tenderFeeMethod">
+                            <option value="percentage">Percentage of construction cost</option>
+                            <option value="fixed">Fixed fee</option>
+                        </select>
+                    </div>
+                    <div class="input-group" id="tenderPercentageGroup">
+                        <label>Percentage (%)</label>
+                        <input type="number" id="tenderPercentage" placeholder="1-2%" min="0" max="100" step="0.1" value="1.5">
+                    </div>
+                    <div class="input-group" id="tenderFixedGroup" style="display: none;">
+                        <label>Fixed Fee (£)</label>
+                        <input type="number" id="tenderFixed" placeholder="Enter fixed fee" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="fee-stage">
+                <div class="fee-stage-title">Contract Administration (RIBA Stage 6) - Optional</div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="includeContractAdmin">
+                    <label for="includeContractAdmin">Include Contract Administration</label>
+                </div>
+                <div id="contractAdminFeeSection" style="display: none; margin-top: 10px;">
+                    <div class="input-group">
+                        <label>Calculation Method</label>
+                        <select id="contractAdminFeeMethod">
+                            <option value="percentage">Percentage of construction cost</option>
+                            <option value="fixed">Fixed fee</option>
+                            <option value="hourly">Hourly rate</option>
+                            <option value="weekly">Weekly rate</option>
+                        </select>
+                    </div>
+                    <div class="input-group" id="contractAdminPercentageGroup">
+                        <label>Percentage (%)</label>
+                        <input type="number" id="contractAdminPercentage" placeholder="2-4%" min="0" max="100" step="0.1" value="3">
+                    </div>
+                    <div class="input-group" id="contractAdminFixedGroup" style="display: none;">
+                        <label>Fixed Fee (£)</label>
+                        <input type="number" id="contractAdminFixed" placeholder="Enter fixed fee" min="0">
+                    </div>
+                    <div id="contractAdminHourlyGroup" style="display: none;">
+                        <div class="input-group">
+                            <label>Hourly Rate (£)</label>
+                            <input type="number" id="contractAdminHourlyRate" placeholder="50 - 100" min="0" value="75">
+                        </div>
+                        <div class="input-group">
+                            <label>Estimated Hours</label>
+                            <input type="number" id="contractAdminHours" placeholder="Enter hours" min="0" value="40">
+                        </div>
+                    </div>
+                    <div id="contractAdminWeeklyGroup" style="display: none;">
+                        <div class="input-group">
+                            <label>Weekly Rate (£)</label>
+                            <input type="number" id="contractAdminWeeklyRate" placeholder="300 - 600" min="0" value="450">
+                        </div>
+                        <div class="input-group">
+                            <label>Number of Weeks</label>
+                            <input type="number" id="contractAdminWeeks" placeholder="Enter weeks" min="0" value="12">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <div class="form-section">
@@ -468,7 +543,7 @@
             </div>
             
             <div class="checkbox-group">
-                <input type="checkbox" id="warrantRequired" checked>
+                <input type="checkbox" id="warrantRequired">
                 <label for="warrantRequired">Building Warrant Required</label>
             </div>
             <div class="sub-input" id="warrantFeeInput">
@@ -580,6 +655,16 @@
                     <span class="result-label">Architect - Building Warrant <span class="range-indicator" id="warrantDesignMethod"></span></span>
                     <span class="result-value" id="warrantDesignDisplay">£0</span>
                 </div>
+
+                <div class="result-row">
+                    <span class="result-label">Architect - Tender Support <span class="range-indicator" id="tenderMethod"></span></span>
+                    <span class="result-value" id="tenderDisplay">£0</span>
+                </div>
+
+                <div class="result-row">
+                    <span class="result-label">Architect - Contract Administration <span class="range-indicator" id="contractAdminMethod"></span></span>
+                    <span class="result-value" id="contractAdminDisplay">£0</span>
+                </div>
                 
                 <div class="result-row">
                     <span class="result-label">Planning Permission Fee</span>
@@ -610,7 +695,7 @@
         </div>
     </div>
     
-    <script>
+   <script>
         // Set current date
         document.getElementById('date').value = new Date().toLocaleDateString('en-GB');
         
@@ -631,22 +716,34 @@
         setupCheckboxToggle('measuredSurvey', 'measuredSurveyInput');
         setupCheckboxToggle('groundSurvey', 'groundSurveyInput');
         setupCheckboxToggle('billOfQuantities', 'billOfQuantitiesInput');
+        setupCheckboxToggle('includeEngineer', 'engineerFeeInput');
+        setupCheckboxToggle('includeTender', 'tenderFeeSection');
+        setupCheckboxToggle('includeContractAdmin', 'contractAdminFeeSection');
         setupCheckboxToggle('planningRequired', 'planningFeeInput');
         setupCheckboxToggle('warrantRequired', 'warrantFeeInput');
         
         // Toggle architect fee input methods for each stage
-        function setupFeeMethodToggle(methodId, percentageGroupId, fixedGroupId) {
+        function setupFeeMethodToggle(methodId, percentageGroupId, fixedGroupId, hourlyGroupId, weeklyGroupId) {
             const method = document.getElementById(methodId);
             const percentageGroup = document.getElementById(percentageGroupId);
             const fixedGroup = document.getElementById(fixedGroupId);
+            const hourlyGroup = hourlyGroupId ? document.getElementById(hourlyGroupId) : null;
+            const weeklyGroup = weeklyGroupId ? document.getElementById(weeklyGroupId) : null;
             
             method.addEventListener('change', function() {
+                percentageGroup.style.display = 'none';
+                fixedGroup.style.display = 'none';
+                if (hourlyGroup) hourlyGroup.style.display = 'none';
+                if (weeklyGroup) weeklyGroup.style.display = 'none';
+                
                 if (this.value === 'percentage') {
                     percentageGroup.style.display = 'block';
-                    fixedGroup.style.display = 'none';
-                } else {
-                    percentageGroup.style.display = 'none';
+                } else if (this.value === 'fixed') {
                     fixedGroup.style.display = 'block';
+                } else if (this.value === 'hourly' && hourlyGroup) {
+                    hourlyGroup.style.display = 'block';
+                } else if (this.value === 'weekly' && weeklyGroup) {
+                    weeklyGroup.style.display = 'block';
                 }
                 calculate();
             });
@@ -655,6 +752,8 @@
         setupFeeMethodToggle('conceptFeeMethod', 'conceptPercentageGroup', 'conceptFixedGroup');
         setupFeeMethodToggle('planningDesignFeeMethod', 'planningDesignPercentageGroup', 'planningDesignFixedGroup');
         setupFeeMethodToggle('warrantDesignFeeMethod', 'warrantDesignPercentageGroup', 'warrantDesignFixedGroup');
+        setupFeeMethodToggle('tenderFeeMethod', 'tenderPercentageGroup', 'tenderFixedGroup');
+        setupFeeMethodToggle('contractAdminFeeMethod', 'contractAdminPercentageGroup', 'contractAdminFixedGroup', 'contractAdminHourlyGroup', 'contractAdminWeeklyGroup');
         
         // Add event listeners to all inputs
         document.querySelectorAll('input, select').forEach(element => {
@@ -712,7 +811,8 @@
             const billOfQuantities = document.getElementById('billOfQuantities').checked ? 
                 (parseFloat(document.getElementById('billOfQuantitiesCost').value) || 0) : 0;
             
-            const engineerFee = parseFloat(document.getElementById('engineerFee').value) || 0;
+            const engineerFee = document.getElementById('includeEngineer').checked ?
+                (parseFloat(document.getElementById('engineerFee').value) || 0) : 0;
             
             // Architect fees by stage
             let conceptFee = 0;
@@ -748,6 +848,48 @@
                 document.getElementById('warrantDesignMethod').textContent = '(fixed)';
             }
             
+            // Tender stage
+            let tenderFee = 0;
+            if (document.getElementById('includeTender').checked) {
+                const tenderMethod = document.getElementById('tenderFeeMethod').value;
+                if (tenderMethod === 'percentage') {
+                    const tenderPercent = parseFloat(document.getElementById('tenderPercentage').value) || 0;
+                    tenderFee = totalConstruction * (tenderPercent / 100);
+                    document.getElementById('tenderMethod').textContent = `(${tenderPercent}%)`;
+                } else {
+                    tenderFee = parseFloat(document.getElementById('tenderFixed').value) || 0;
+                    document.getElementById('tenderMethod').textContent = '(fixed)';
+                }
+            } else {
+                document.getElementById('tenderMethod').textContent = '';
+            }
+            
+            // Contract Admin stage
+            let contractAdminFee = 0;
+            if (document.getElementById('includeContractAdmin').checked) {
+                const contractAdminMethod = document.getElementById('contractAdminFeeMethod').value;
+                if (contractAdminMethod === 'percentage') {
+                    const contractAdminPercent = parseFloat(document.getElementById('contractAdminPercentage').value) || 0;
+                    contractAdminFee = totalConstruction * (contractAdminPercent / 100);
+                    document.getElementById('contractAdminMethod').textContent = `(${contractAdminPercent}%)`;
+                } else if (contractAdminMethod === 'fixed') {
+                    contractAdminFee = parseFloat(document.getElementById('contractAdminFixed').value) || 0;
+                    document.getElementById('contractAdminMethod').textContent = '(fixed)';
+                } else if (contractAdminMethod === 'hourly') {
+                    const hourlyRate = parseFloat(document.getElementById('contractAdminHourlyRate').value) || 0;
+                    const hours = parseFloat(document.getElementById('contractAdminHours').value) || 0;
+                    contractAdminFee = hourlyRate * hours;
+                    document.getElementById('contractAdminMethod').textContent = `(£${hourlyRate}/hr × ${hours}hrs)`;
+                } else if (contractAdminMethod === 'weekly') {
+                    const weeklyRate = parseFloat(document.getElementById('contractAdminWeeklyRate').value) || 0;
+                    const weeks = parseFloat(document.getElementById('contractAdminWeeks').value) || 0;
+                    contractAdminFee = weeklyRate * weeks;
+                    document.getElementById('contractAdminMethod').textContent = `(£${weeklyRate}/wk × ${weeks}wks)`;
+                }
+            } else {
+                document.getElementById('contractAdminMethod').textContent = '';
+            }
+            
             // Statutory fees
             const planningFee = document.getElementById('planningRequired').checked ? 
                 (parseFloat(document.getElementById('planningFee').value) || 0) : 0;
@@ -757,7 +899,7 @@
             
             const totalFees = ordnanceMaps + measuredSurvey + groundSurvey + billOfQuantities + 
                              engineerFee + conceptFee + planningDesignFee + warrantDesignFee + 
-                             planningFee + warrantFee;
+                             tenderFee + contractAdminFee + planningFee + warrantFee;
             
             // Grand total
             const grandTotal = totalConstructionVAT + totalFees;
@@ -782,6 +924,8 @@
             document.getElementById('conceptDisplay').textContent = formatCurrency(conceptFee);
             document.getElementById('planningDesignDisplay').textContent = formatCurrency(planningDesignFee);
             document.getElementById('warrantDesignDisplay').textContent = formatCurrency(warrantDesignFee);
+            document.getElementById('tenderDisplay').textContent = formatCurrency(tenderFee);
+            document.getElementById('contractAdminDisplay').textContent = formatCurrency(contractAdminFee);
             document.getElementById('planningDisplay').textContent = formatCurrency(planningFee);
             document.getElementById('warrantDisplay').textContent = formatCurrency(warrantFee);
             document.getElementById('totalFees').textContent = formatCurrency(totalFees);
@@ -799,7 +943,7 @@
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.aoa_to_sheet([
                 ['JKA ARCHITECTURE - EXTENSION COST ESTIMATE'],
-                ['Scotland 2025'],
+                ['Scotland 2026'],
                 [''],
                 ['CLIENT INFORMATION'],
                 ['Client Name:', data.clientName],
@@ -831,6 +975,8 @@
                 ['Architect - Concept Design:', '£' + data.conceptFee.toLocaleString()],
                 ['Architect - Planning Application:', '£' + data.planningDesignFee.toLocaleString()],
                 ['Architect - Building Warrant:', '£' + data.warrantDesignFee.toLocaleString()],
+                ['Architect - Tender Support:', '£' + data.tenderFee.toLocaleString()],
+                ['Architect - Contract Administration:', '£' + data.contractAdminFee.toLocaleString()],
                 ['Planning Permission Fee:', '£' + data.planningFee.toLocaleString()],
                 ['Building Warrant Fee:', '£' + data.warrantFee.toLocaleString()],
                 ['Total Fees:', '£' + data.totalFees.toLocaleString()],
@@ -853,8 +999,10 @@
                 ['- Concept Design (Stage 2): typically 2-3% of construction cost'],
                 ['- Planning Application (Stage 3): typically 3-4% of construction cost'],
                 ['- Building Warrant (Stage 4): typically 3-4% of construction cost'],
+                ['- Tender Support (Stage 5): typically 1-2% of construction cost'],
+                ['- Contract Administration (Stage 6): typically 2-4% or hourly/weekly rate'],
                 [''],
-                ['This estimate is indicative and based on typical market rates for Scotland in 2025.'],
+                ['This estimate is indicative and based on typical market rates for Scotland in 2026.'],
                 ['Final costs depend on specification, site conditions, and contractor pricing.']
             ]);
             
@@ -899,7 +1047,8 @@
                 Math.round(parseFloat(document.getElementById('groundSurveyCost').value) || 0) : 0;
             const billOfQuantities = document.getElementById('billOfQuantities').checked ? 
                 Math.round(parseFloat(document.getElementById('billOfQuantitiesCost').value) || 0) : 0;
-            const engineerFee = Math.round(parseFloat(document.getElementById('engineerFee').value) || 0);
+            const engineerFee = document.getElementById('includeEngineer').checked ?
+                Math.round(parseFloat(document.getElementById('engineerFee').value) || 0) : 0;
             
             let conceptFee = 0;
             if (document.getElementById('conceptFeeMethod').value === 'percentage') {
@@ -925,111 +1074,164 @@
                 warrantDesignFee = Math.round(parseFloat(document.getElementById('warrantDesignFixed').value) || 0);
             }
             
-            const planningFee = document.getElementById('planningRequired').checked ? 
-                Math.round(parseFloat(document.getElementById('planningFee').value) || 0) : 0;
-            const warrantFee = document.getElementById('warrantRequired').checked ? 
-                Math.round(parseFloat(document.getElementById('warrantFee').value) || 0) : 0;
-            
-            const totalFees = ordnanceMaps + measuredSurvey + groundSurvey + billOfQuantities + 
-                             engineerFee + conceptFee + planningDesignFee + warrantDesignFee + 
-                             planningFee + warrantFee;
-            const grandTotal = totalConstructionVAT + totalFees;
-            
-            return {
-                clientName: document.getElementById('clientName').value || 'Not specified',
-                projectAddress: document.getElementById('projectAddress').value || 'Not specified',
-                date: document.getElementById('date').value,
-                extensionType: extensionType === 'single' ? 'Single-storey' : 'Two-storey',
-                floorArea: floorArea,
-                costPerSqm: costPerSqm,
-                buildCost: buildCost,
-                kitchenCost: kitchenCost,
-                bathroomCost: bathroomCost,
-                totalConstruction: totalConstruction,
-                contingencyPercent: contingencyPercent,
-                contingencyCost: contingencyCost,
-                constructionWithContingency: constructionWithContingency,
-                vatCost: vatCost,
-                totalConstructionVAT: totalConstructionVAT,
-                ordnanceMaps: ordnanceMaps,
-                measuredSurvey: measuredSurvey,
-                groundSurvey: groundSurvey,
-                billOfQuantities: billOfQuantities,
-                engineerFee: engineerFee,
-                conceptFee: conceptFee,
-                planningDesignFee: planningDesignFee,
-                warrantDesignFee: warrantDesignFee,
-                planningFee: planningFee,
-                warrantFee: warrantFee,
-                totalFees: totalFees,
-                grandTotal: grandTotal
-            };
-        }
-        
-        function resetForm() {
-            if (confirm('Are you sure you want to reset all values?')) {
-                document.getElementById('clientName').value = '';
-                document.getElementById('projectAddress').value = '';
-                document.getElementById('date').value = new Date().toLocaleDateString('en-GB');
-                document.getElementById('extensionType').value = 'single';
-                document.getElementById('floorArea').value = '';
-                document.getElementById('costRange').value = 'mid';
-                
-                document.getElementById('includeKitchen').checked = false;
-                document.getElementById('includeBathroom').checked = false;
-                document.getElementById('kitchenCostValue').value = '6500';
-                document.getElementById('bathroomCostValue').value = '8500';
-                document.getElementById('kitchenCostInput').style.display = 'none';
-                document.getElementById('bathroomCostInput').style.display = 'none';
-                
-                document.getElementById('ordnanceMaps').checked = false;
-                document.getElementById('measuredSurvey').checked = false;
-                document.getElementById('groundSurvey').checked = false;
-                document.getElementById('billOfQuantities').checked = false;
-                document.getElementById('ordnanceMapsInput').style.display = 'none';
-                document.getElementById('measuredSurveyInput').style.display = 'none';
-                document.getElementById('groundSurveyInput').style.display = 'none';
-                document.getElementById('billOfQuantitiesInput').style.display = 'none';
-                document.getElementById('ordnanceMapsCost').value = '50';
-                document.getElementById('measuredSurveyCost').value = '500';
-                document.getElementById('groundSurveyCost').value = '800';
-                document.getElementById('billOfQuantitiesCost').value = '1000';
-                
-                document.getElementById('engineerFee').value = '1500';
-                
-                document.getElementById('conceptFeeMethod').value = 'percentage';
-                document.getElementById('conceptPercentage').value = '2.5';
-                document.getElementById('conceptFixed').value = '';
-                document.getElementById('conceptPercentageGroup').style.display = 'block';
-                document.getElementById('conceptFixedGroup').style.display = 'none';
-                
-                document.getElementById('planningDesignFeeMethod').value = 'percentage';
-                document.getElementById('planningDesignPercentage').value = '3.5';
-                document.getElementById('planningDesignFixed').value = '';
-                document.getElementById('planningDesignPercentageGroup').style.display = 'block';
-                document.getElementById('planningDesignFixedGroup').style.display = 'none';
-                
-                document.getElementById('warrantDesignFeeMethod').value = 'percentage';
-                document.getElementById('warrantDesignPercentage').value = '3.5';
-                document.getElementById('warrantDesignFixed').value = '';
-                document.getElementById('warrantDesignPercentageGroup').style.display = 'block';
-                document.getElementById('warrantDesignFixedGroup').style.display = 'none';
-                
-                document.getElementById('planningRequired').checked = false;
-                document.getElementById('warrantRequired').checked = true;
-                document.getElementById('planningFeeInput').style.display = 'none';
-                document.getElementById('warrantFeeInput').style.display = 'block';
-                document.getElementById('planningFee').value = '400';
-                document.getElementById('warrantFee').value = '400';
-                
-                document.getElementById('contingencyPercent').value = '15';
-                
-                calculate();
+            let tenderFee = 0;
+            if (document.getElementById('includeTender').checked) {
+                if (document.getElementById('tenderFeeMethod').value === 'percentage') {
+                    const percent = parseFloat(document.getElementById('tenderPercentage').value) || 0;
+                    tenderFee = Math.round(totalConstruction * (percent / 100));
+                } else {tenderFee = Math.round(parseFloat(document.getElementById('tenderFixed').value) || 0);
             }
         }
         
-        // Initial calculation
-        calculate();
+        let contractAdminFee = 0;
+        if (document.getElementById('includeContractAdmin').checked) {
+            const method = document.getElementById('contractAdminFeeMethod').value;
+            if (method === 'percentage') {
+                const percent = parseFloat(document.getElementById('contractAdminPercentage').value) || 0;
+                contractAdminFee = Math.round(totalConstruction * (percent / 100));
+            } else if (method === 'fixed') {
+                contractAdminFee = Math.round(parseFloat(document.getElementById('contractAdminFixed').value) || 0);
+            } else if (method === 'hourly') {
+                const rate = parseFloat(document.getElementById('contractAdminHourlyRate').value) || 0;
+                const hours = parseFloat(document.getElementById('contractAdminHours').value) || 0;
+                contractAdminFee = Math.round(rate * hours);
+            } else if (method === 'weekly') {
+                const rate = parseFloat(document.getElementById('contractAdminWeeklyRate').value) || 0;
+                const weeks = parseFloat(document.getElementById('contractAdminWeeks').value) || 0;
+                contractAdminFee = Math.round(rate * weeks);
+            }
+        }
+        
+        const planningFee = document.getElementById('planningRequired').checked ? 
+            Math.round(parseFloat(document.getElementById('planningFee').value) || 0) : 0;
+        const warrantFee = document.getElementById('warrantRequired').checked ? 
+            Math.round(parseFloat(document.getElementById('warrantFee').value) || 0) : 0;
+        
+        const totalFees = ordnanceMaps + measuredSurvey + groundSurvey + billOfQuantities + 
+                         engineerFee + conceptFee + planningDesignFee + warrantDesignFee + 
+                         tenderFee + contractAdminFee + planningFee + warrantFee;
+        const grandTotal = totalConstructionVAT + totalFees;
+        
+        return {
+            clientName: document.getElementById('clientName').value || 'Not specified',
+            projectAddress: document.getElementById('projectAddress').value || 'Not specified',
+            date: document.getElementById('date').value,
+            extensionType: extensionType === 'single' ? 'Single-storey' : 'Two-storey',
+            floorArea: floorArea,
+            costPerSqm: costPerSqm,
+            buildCost: buildCost,
+            kitchenCost: kitchenCost,
+            bathroomCost: bathroomCost,
+            totalConstruction: totalConstruction,
+            contingencyPercent: contingencyPercent,
+            contingencyCost: contingencyCost,
+            constructionWithContingency: constructionWithContingency,
+            vatCost: vatCost,
+            totalConstructionVAT: totalConstructionVAT,
+            ordnanceMaps: ordnanceMaps,
+            measuredSurvey: measuredSurvey,
+            groundSurvey: groundSurvey,
+            billOfQuantities: billOfQuantities,
+            engineerFee: engineerFee,
+            conceptFee: conceptFee,
+            planningDesignFee: planningDesignFee,
+            warrantDesignFee: warrantDesignFee,
+            tenderFee: tenderFee,
+            contractAdminFee: contractAdminFee,
+            planningFee: planningFee,
+            warrantFee: warrantFee,
+            totalFees: totalFees,
+            grandTotal: grandTotal
+        };
+    }
+    
+    function resetForm() {
+        if (confirm('Are you sure you want to reset all values?')) {
+            document.getElementById('clientName').value = '';
+            document.getElementById('projectAddress').value = '';
+            document.getElementById('date').value = new Date().toLocaleDateString('en-GB');
+            document.getElementById('extensionType').value = 'single';
+            document.getElementById('floorArea').value = '';
+            document.getElementById('costRange').value = 'mid';
+            
+            document.getElementById('includeKitchen').checked = false;
+            document.getElementById('includeBathroom').checked = false;
+            document.getElementById('kitchenCostValue').value = '6500';
+            document.getElementById('bathroomCostValue').value = '8500';
+            document.getElementById('kitchenCostInput').style.display = 'none';
+            document.getElementById('bathroomCostInput').style.display = 'none';
+            
+            document.getElementById('ordnanceMaps').checked = false;
+            document.getElementById('measuredSurvey').checked = false;
+            document.getElementById('groundSurvey').checked = false;
+            document.getElementById('billOfQuantities').checked = false;
+            document.getElementById('includeEngineer').checked = false;
+            document.getElementById('ordnanceMapsInput').style.display = 'none';
+            document.getElementById('measuredSurveyInput').style.display = 'none';
+            document.getElementById('groundSurveyInput').style.display = 'none';
+            document.getElementById('billOfQuantitiesInput').style.display = 'none';
+            document.getElementById('engineerFeeInput').style.display = 'none';
+            document.getElementById('ordnanceMapsCost').value = '50';
+            document.getElementById('measuredSurveyCost').value = '500';
+            document.getElementById('groundSurveyCost').value = '800';
+            document.getElementById('billOfQuantitiesCost').value = '1000';
+            document.getElementById('engineerFee').value = '1500';
+            
+            document.getElementById('conceptFeeMethod').value = 'percentage';
+            document.getElementById('conceptPercentage').value = '2.5';
+            document.getElementById('conceptFixed').value = '';
+            document.getElementById('conceptPercentageGroup').style.display = 'block';
+            document.getElementById('conceptFixedGroup').style.display = 'none';
+            
+            document.getElementById('planningDesignFeeMethod').value = 'percentage';
+            document.getElementById('planningDesignPercentage').value = '3.5';
+            document.getElementById('planningDesignFixed').value = '';
+            document.getElementById('planningDesignPercentageGroup').style.display = 'block';
+            document.getElementById('planningDesignFixedGroup').style.display = 'none';
+            
+            document.getElementById('warrantDesignFeeMethod').value = 'percentage';
+            document.getElementById('warrantDesignPercentage').value = '3.5';
+            document.getElementById('warrantDesignFixed').value = '';
+            document.getElementById('warrantDesignPercentageGroup').style.display = 'block';
+            document.getElementById('warrantDesignFixedGroup').style.display = 'none';
+            
+            document.getElementById('includeTender').checked = false;
+            document.getElementById('tenderFeeSection').style.display = 'none';
+            document.getElementById('tenderFeeMethod').value = 'percentage';
+            document.getElementById('tenderPercentage').value = '1.5';
+            document.getElementById('tenderFixed').value = '';
+            document.getElementById('tenderPercentageGroup').style.display = 'block';
+            document.getElementById('tenderFixedGroup').style.display = 'none';
+            
+            document.getElementById('includeContractAdmin').checked = false;
+            document.getElementById('contractAdminFeeSection').style.display = 'none';
+            document.getElementById('contractAdminFeeMethod').value = 'percentage';
+            document.getElementById('contractAdminPercentage').value = '3';
+            document.getElementById('contractAdminFixed').value = '';
+            document.getElementById('contractAdminHourlyRate').value = '75';
+            document.getElementById('contractAdminHours').value = '40';
+            document.getElementById('contractAdminWeeklyRate').value = '450';
+            document.getElementById('contractAdminWeeks').value = '12';
+            document.getElementById('contractAdminPercentageGroup').style.display = 'block';
+            document.getElementById('contractAdminFixedGroup').style.display = 'none';
+            document.getElementById('contractAdminHourlyGroup').style.display = 'none';
+            document.getElementById('contractAdminWeeklyGroup').style.display = 'none';
+            
+            document.getElementById('planningRequired').checked = false;
+            document.getElementById('warrantRequired').checked = false;
+            document.getElementById('planningFeeInput').style.display = 'none';
+            document.getElementById('warrantFeeInput').style.display = 'none';
+            document.getElementById('planningFee').value = '400';
+            document.getElementById('warrantFee').value = '400';
+            
+            document.getElementById('contingencyPercent').value = '15';
+            
+            calculate();
+        }
+    }
+    
+    // Initial calculation
+    calculate();
     </script>
 </body>
 </html>
