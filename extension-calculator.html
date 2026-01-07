@@ -340,6 +340,20 @@
                 <input type="number" id="bathroomCostValue" placeholder="Enter cost" min="0" value="8500">
                 <div class="hint">Typical range: £7,000 - £10,000 (avg. £8,500)</div>
             </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="includeOpenings">
+                <label for="includeOpenings">Structural Openings in Load-Bearing Walls</label>
+            </div>
+            <div class="sub-input" id="openingsCostInput" style="display: none;">
+                <label>Linear Meters of Openings</label>
+                <input type="number" id="openingsMeters" placeholder="e.g., 2.4" min="0" step="0.1" value="0">
+                <div class="hint">Typical width: single door ~1m, double doors ~1.5-2m, large opening ~3-4m</div>
+                
+                <label style="margin-top: 10px;">Cost per Linear Meter (£)</label>
+                <input type="number" id="openingsCostPerMeter" placeholder="3000 - 5000" min="0" value="4000">
+                <div class="hint">Typical range: £3,000 - £5,000/m (avg. £4,000)</div>
+            </div>
         </div>
         
         <div class="form-section">
@@ -589,6 +603,11 @@
                 <span class="result-label">Bathroom</span>
                 <span class="result-value" id="bathroomCost">£0</span>
             </div>
+
+            <div class="result-row">
+                <span class="result-label">Structural Openings <span class="range-indicator" id="openingsDetail"></span></span>
+                <span class="result-value" id="openingsCost">£0</span>
+            </div>
             
             <div class="result-row subtotal">
                 <span class="result-label">Total Construction Cost (ex VAT)</span>
@@ -712,6 +731,7 @@
         
         setupCheckboxToggle('includeKitchen', 'kitchenCostInput');
         setupCheckboxToggle('includeBathroom', 'bathroomCostInput');
+        setupCheckboxToggle('includeOpenings', 'openingsCostInput');
         setupCheckboxToggle('ordnanceMaps', 'ordnanceMapsInput');
         setupCheckboxToggle('measuredSurvey', 'measuredSurveyInput');
         setupCheckboxToggle('groundSurvey', 'groundSurveyInput');
@@ -784,8 +804,18 @@
             const kitchenCost = includeKitchen ? (parseFloat(document.getElementById('kitchenCostValue').value) || 0) : 0;
             const bathroomCost = includeBathroom ? (parseFloat(document.getElementById('bathroomCostValue').value) || 0) : 0;
             
+            // Structural openings
+            const includeOpenings = document.getElementById('includeOpenings').checked;
+            let openingsCost = 0;
+            let openingsMeters = 0;
+            if (includeOpenings) {
+                openingsMeters = parseFloat(document.getElementById('openingsMeters').value) || 0;
+                const costPerMeter = parseFloat(document.getElementById('openingsCostPerMeter').value) || 0;
+                openingsCost = openingsMeters * costPerMeter;
+            }
+            
             // Total construction cost
-            const totalConstruction = buildCost + kitchenCost + bathroomCost;
+            const totalConstruction = buildCost + kitchenCost + bathroomCost + openingsCost;
             
             // Contingency (on construction cost only)
             const contingencyPercent = parseFloat(document.getElementById('contingencyPercent').value);
@@ -908,6 +938,8 @@
             document.getElementById('buildCost').textContent = formatCurrency(buildCost);
             document.getElementById('kitchenCost').textContent = formatCurrency(kitchenCost);
             document.getElementById('bathroomCost').textContent = formatCurrency(bathroomCost);
+            document.getElementById('openingsCost').textContent = formatCurrency(openingsCost);
+            document.getElementById('openingsDetail').textContent = includeOpenings && openingsMeters > 0 ? `(${openingsMeters}m)` : '';
             
             document.getElementById('totalConstruction').textContent = formatCurrency(totalConstruction);
             document.getElementById('contingencyCost').textContent = formatCurrency(contingencyCost);
@@ -959,6 +991,7 @@
                 ['Build Cost (ex VAT):', '£' + data.buildCost.toLocaleString()],
                 ['Kitchen:', '£' + data.kitchenCost.toLocaleString()],
                 ['Bathroom:', '£' + data.bathroomCost.toLocaleString()],
+                ['Structural Openings (' + data.openingsMeters + 'm):', '£' + data.openingsCost.toLocaleString()],
                 ['Total Construction (ex VAT):', '£' + data.totalConstruction.toLocaleString()],
                 [''],
                 ['Contingency (' + data.contingencyPercent + '%):', '£' + data.contingencyCost.toLocaleString()],
@@ -992,6 +1025,7 @@
                 [''],
                 ['Kitchen range: £5,000 - £8,000 (avg. £6,500)'],
                 ['Bathroom range: £7,000 - £10,000 (avg. £8,500)'],
+                ['Structural openings: £3,000 - £5,000 per linear meter (avg. £4,000)'],
                 ['Ordnance Survey Maps: £25 - £75'],
                 ['Bill of Quantities range: £500 - £2,000'],
                 [''],
@@ -1031,7 +1065,16 @@
                 Math.round(parseFloat(document.getElementById('kitchenCostValue').value) || 0) : 0;
             const bathroomCost = document.getElementById('includeBathroom').checked ? 
                 Math.round(parseFloat(document.getElementById('bathroomCostValue').value) || 0) : 0;
-            const totalConstruction = buildCost + kitchenCost + bathroomCost;
+            
+            let openingsCost = 0;
+            let openingsMeters = 0;
+            if (document.getElementById('includeOpenings').checked) {
+                openingsMeters = parseFloat(document.getElementById('openingsMeters').value) || 0;
+                const costPerMeter = parseFloat(document.getElementById('openingsCostPerMeter').value) || 0;
+                openingsCost = Math.round(openingsMeters * costPerMeter);
+            }
+            
+            const totalConstruction = buildCost + kitchenCost + bathroomCost + openingsCost;
             
             const contingencyPercent = parseFloat(document.getElementById('contingencyPercent').value);
             const contingencyCost = Math.round(totalConstruction * (contingencyPercent / 100));
@@ -1122,6 +1165,8 @@
             buildCost: buildCost,
             kitchenCost: kitchenCost,
             bathroomCost: bathroomCost,
+            openingsCost: openingsCost,
+                openingsMeters: openingsMeters,
             totalConstruction: totalConstruction,
             contingencyPercent: contingencyPercent,
             contingencyCost: contingencyCost,
@@ -1160,6 +1205,10 @@
             document.getElementById('bathroomCostValue').value = '8500';
             document.getElementById('kitchenCostInput').style.display = 'none';
             document.getElementById('bathroomCostInput').style.display = 'none';
+            document.getElementById('includeOpenings').checked = false;
+                document.getElementById('openingsMeters').value = '0';
+                document.getElementById('openingsCostPerMeter').value = '4000';
+                document.getElementById('openingsCostInput').style.display = 'none';
             
             document.getElementById('ordnanceMaps').checked = false;
             document.getElementById('measuredSurvey').checked = false;
