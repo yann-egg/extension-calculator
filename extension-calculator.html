@@ -411,15 +411,6 @@
                 <input type="number" id="groundSurveyCost" placeholder="500 - 1,200" min="0" value="800">
             </div>
             
-            <div class="checkbox-group">
-                <input type="checkbox" id="billOfQuantities">
-                <label for="billOfQuantities">Bill of Quantities</label>
-            </div>
-            <div class="sub-input" id="billOfQuantitiesInput" style="display: none;">
-                <label>Cost (£)</label>
-                <input type="number" id="billOfQuantitiesCost" placeholder="500 - 2,000" min="0" value="1000">
-                <div class="hint">Typical range: £500 - £2,000</div>
-            </div>
         </div>
         
         <div class="form-section">
@@ -433,6 +424,16 @@
                 <label>Fee (£)</label>
                 <input type="number" id="engineerFee" placeholder="900 - 2,000" min="0" value="1500">
                 <div class="hint">Typical range: £900 - £2,000</div>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="billOfQuantities">
+                <label for="billOfQuantities">Bill of Quantities</label>
+            </div>
+            <div class="sub-input" id="billOfQuantitiesInput" style="display: none;">
+                <label>Cost (£)</label>
+                <input type="number" id="billOfQuantitiesCost" placeholder="500 - 2,000" min="0" value="1000">
+                <div class="hint">Typical range: £500 - £2,000</div>
             </div>
             
             <div class="note">
@@ -613,125 +614,138 @@
         
         <div class="results">
             <div class="section-title">Cost Breakdown</div>
-            
-            <div class="result-row">
-                <span class="result-label">Build Cost (ex VAT)</span>
-                <span class="result-value" id="buildCost">£0</span>
-            </div>
-            
-            <div class="result-row">
-                <span class="result-label">Kitchen</span>
-                <span class="result-value" id="kitchenCost">£0</span>
-            </div>
-            
-            <div class="result-row">
-                <span class="result-label">Bathroom</span>
-                <span class="result-value" id="bathroomCost">£0</span>
-            </div>
+    
+    <div class="result-row">
+        <span class="result-label">Build Cost (ex VAT)</span>
+        <span class="result-value" id="buildCost">£0</span>
+    </div>
+    
+    <div class="result-row">
+        <span class="result-label">Kitchen</span>
+        <span class="result-value" id="kitchenCost">£0</span>
+    </div>
+    
+    <div class="result-row">
+        <span class="result-label">Bathroom</span>
+        <span class="result-value" id="bathroomCost">£0</span>
+    </div>
 
-            <div class="result-row">
-                <span class="result-label">Structural Openings <span class="range-indicator" id="openingsDetail"></span></span>
-                <span class="result-value" id="openingsCost">£0</span>
-            </div>
-            
-            <div class="result-row subtotal">
-                <span class="result-label">Total Construction Cost (ex VAT)</span>
-                <span class="result-value" id="totalConstruction">£0</span>
-            </div>
-            
-            <div class="result-row">
-                <span class="result-label">Contingency <span class="range-indicator" id="contingencyLabel"></span></span>
-                <span class="result-value" id="contingencyCost">£0</span>
-            </div>
-            
-            <div class="result-row">
-                <span class="result-label">Construction + Contingency (ex VAT)</span>
-                <span class="result-value" id="constructionWithContingency">£0</span>
-            </div>
-            
-            <div class="result-row">
-                <span class="result-label">VAT (20%)</span>
-                <span class="result-value" id="vatCost">£0</span>
-            </div>
-            
-            <div class="result-row subtotal">
-                <span class="result-label">Total Construction (inc VAT)</span>
-                <span class="result-value" id="totalConstructionVAT">£0</span>
-            </div>
-            
-            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #19191920;">
-                <div class="result-row">
-                    <span class="result-label">Ordnance Survey Maps</span>
-                    <span class="result-value" id="ordnanceMapsDisplay">£0</span>
-                </div>
-                
-                <div class="result-row">
-                    <span class="result-label">Measured Survey</span>
-                    <span class="result-value" id="measuredSurveyDisplay">£0</span>
-                </div>
-                
-                <div class="result-row">
-                    <span class="result-label">Ground Survey</span>
-                    <span class="result-value" id="groundSurveyDisplay">£0</span>
-                </div>
-                
-                <div class="result-row">
-                    <span class="result-label">Bill of Quantities</span>
-                    <span class="result-value" id="billOfQuantitiesDisplay">£0</span>
-                </div>
-                
-                <div class="result-row">
-                    <span class="result-label">Structural Engineer</span>
-                    <span class="result-value" id="engineerDisplay">£0</span>
-                </div>
-                
-                <div class="result-row">
-                    <span class="result-label">Architect - Concept Design <span class="range-indicator" id="conceptMethod"></span></span>
-                    <span class="result-value" id="conceptDisplay">£0</span>
-                </div>
-
-                <div class="result-row">
-                    <span class="result-label">Architect - Planning Application <span class="range-indicator" id="planningDesignMethod"></span></span>
-                    <span class="result-value" id="planningDesignDisplay">£0</span>
-                </div>
-
-                <div class="result-row">
-                    <span class="result-label">Architect - Building Warrant <span class="range-indicator" id="warrantDesignMethod"></span></span>
-                    <span class="result-value" id="warrantDesignDisplay">£0</span>
-                </div>
-
-                <div class="result-row">
-                    <span class="result-label">Architect - Tender Support <span class="range-indicator" id="tenderMethod"></span></span>
-                    <span class="result-value" id="tenderDisplay">£0</span>
-                </div>
-
-            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #19191920;">
-                <div class="result-row">
-                    <span class="result-label">Architect - Contract Administration <span class="range-indicator" id="contractAdminMethod"></span></span>
-                    <span class="result-value" id="contractAdminDisplay">£0</span>
-                </div>
-                
-                <div class="result-row">
-                    <span class="result-label">Planning Permission Fee</span>
-                    <span class="result-value" id="planningDisplay">£0</span>
-                </div>
-                
-                <div class="result-row">
-                    <span class="result-label">Building Warrant Fee</span>
-                    <span class="result-value" id="warrantDisplay">£0</span>
-                </div>
-                
-                <div class="result-row subtotal">
-                    <span class="result-label">Total Professional & Statutory Fees</span>
-                    <span class="result-value" id="totalFees">£0</span>
-                </div>
-            </div>
-            
-            <div class="result-row total">
-                <span class="result-label">TOTAL PROJECT COST (inc VAT)</span>
-                <span class="result-value" id="grandTotal">£0</span>
-            </div>
+    <div class="result-row">
+        <span class="result-label">Structural Openings <span class="range-indicator" id="openingsDetail"></span></span>
+        <span class="result-value" id="openingsCost">£0</span>
+    </div>
+    
+    <div class="result-row">
+        <span class="result-label">Total Construction Cost (ex VAT)</span>
+        <span class="result-value" id="totalConstruction">£0</span>
+    </div>
+    
+    <div class="result-row">
+        <span class="result-label">Contingency <span class="range-indicator" id="contingencyLabel"></span></span>
+        <span class="result-value" id="contingencyCost">£0</span>
+    </div>
+    
+    <div class="result-row">
+        <span class="result-label">Construction + Contingency (ex VAT)</span>
+        <span class="result-value" id="constructionWithContingency">£0</span>
+    </div>
+    
+    <div class="result-row">
+        <span class="result-label">VAT (20%)</span>
+        <span class="result-value" id="vatCost">£0</span>
+    </div>
+    
+    <div class="result-row subtotal">
+        <span class="result-label">SUBTOTAL: Construction (inc VAT)</span>
+        <span class="result-value" id="totalConstructionVAT">£0</span>
+    </div>
+    
+    <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #19191920;">
+        <div class="result-row">
+            <span class="result-label">Ordnance Survey Maps</span>
+            <span class="result-value" id="ordnanceMapsDisplay">£0</span>
         </div>
+        
+        <div class="result-row">
+            <span class="result-label">Measured Survey</span>
+            <span class="result-value" id="measuredSurveyDisplay">£0</span>
+        </div>
+        
+        <div class="result-row">
+            <span class="result-label">Ground Survey</span>
+            <span class="result-value" id="groundSurveyDisplay">£0</span>
+        </div>
+        
+        <div class="result-row subtotal">
+            <span class="result-label">SUBTOTAL: Surveys & Site Investigation</span>
+            <span class="result-value" id="subtotalSurveys">£0</span>
+        </div>
+    </div>
+    
+    <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #19191920;">
+        <div class="result-row">
+            <span class="result-label">Bill of Quantities</span>
+            <span class="result-value" id="billOfQuantitiesDisplay">£0</span>
+        </div>
+        
+        <div class="result-row">
+            <span class="result-label">Structural Engineer</span>
+            <span class="result-value" id="engineerDisplay">£0</span>
+        </div>
+        
+        <div class="result-row">
+            <span class="result-label">Architect - Concept Design <span class="range-indicator" id="conceptMethod"></span></span>
+            <span class="result-value" id="conceptDisplay">£0</span>
+        </div>
+
+        <div class="result-row">
+            <span class="result-label">Architect - Planning Application <span class="range-indicator" id="planningDesignMethod"></span></span>
+            <span class="result-value" id="planningDesignDisplay">£0</span>
+        </div>
+
+        <div class="result-row">
+            <span class="result-label">Architect - Building Warrant <span class="range-indicator" id="warrantDesignMethod"></span></span>
+            <span class="result-value" id="warrantDesignDisplay">£0</span>
+        </div>
+
+        <div class="result-row">
+            <span class="result-label">Architect - Tender Support <span class="range-indicator" id="tenderMethod"></span></span>
+            <span class="result-value" id="tenderDisplay">£0</span>
+        </div>
+
+        <div class="result-row">
+            <span class="result-label">Architect - Contract Administration <span class="range-indicator" id="contractAdminMethod"></span></span>
+            <span class="result-value" id="contractAdminDisplay">£0</span>
+        </div>
+        
+        <div class="result-row subtotal">
+            <span class="result-label">SUBTOTAL: Professional Fees</span>
+            <span class="result-value" id="subtotalProfessional">£0</span>
+        </div>
+    </div>
+    
+    <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #19191920;">
+        <div class="result-row">
+            <span class="result-label">Planning Permission Fee</span>
+            <span class="result-value" id="planningDisplay">£0</span>
+        </div>
+        
+        <div class="result-row">
+            <span class="result-label">Building Warrant Fee</span>
+            <span class="result-value" id="warrantDisplay">£0</span>
+        </div>
+        
+        <div class="result-row subtotal">
+            <span class="result-label">SUBTOTAL: Statutory Fees</span>
+            <span class="result-value" id="subtotalStatutory">£0</span>
+        </div>
+    </div>
+    
+    <div class="result-row total">
+        <span class="result-label">TOTAL PROJECT COST (inc VAT)</span>
+        <span class="result-value" id="grandTotal">£0</span>
+    </div>
+</div>
         
         <div class="button-group">
             <button class="btn btn-primary" onclick="generateExcel()">Download Excel</button>
@@ -762,8 +776,8 @@ setupCheckboxToggle('includeOpenings', 'openingsCostInput');
 setupCheckboxToggle('ordnanceMaps', 'ordnanceMapsInput');
 setupCheckboxToggle('measuredSurvey', 'measuredSurveyInput');
 setupCheckboxToggle('groundSurvey', 'groundSurveyInput');
-setupCheckboxToggle('billOfQuantities', 'billOfQuantitiesInput');
 setupCheckboxToggle('includeEngineer', 'engineerFeeInput');
+setupCheckboxToggle('billOfQuantities', 'billOfQuantitiesInput');
 setupCheckboxToggle('includeTender', 'tenderFeeSection');
 setupCheckboxToggle('includeContractAdmin', 'contractAdminFeeSection');
 setupCheckboxToggle('planningRequired', 'planningFeeInput');
@@ -1007,13 +1021,17 @@ function calculate() {
     const warrantFee = document.getElementById('warrantRequired').checked ? 
         (parseFloat(document.getElementById('warrantFee').value) || 0) : 0;
     
-    const totalFees = ordnanceMaps + measuredSurvey + groundSurvey + billOfQuantities + 
-                     engineerFee + conceptFee + planningDesignFee + warrantDesignFee + 
-                     tenderFee + contractAdminFee + planningFee + warrantFee;
-    
+    // Calculate subtotals
+    const subtotalSurveys = ordnanceMaps + measuredSurvey + groundSurvey;
+    const subtotalProfessional = billOfQuantities + engineerFee + conceptFee + planningDesignFee + warrantDesignFee + tenderFee + contractAdminFee;
+    const subtotalStatutory = planningFee + warrantFee;
+
+    const totalFees = subtotalSurveys + subtotalProfessional + subtotalStatutory;
+
     // Grand total
     const grandTotal = totalConstructionVAT + totalFees;
-    
+
+      
     // Update display
     document.getElementById('buildCost').textContent = formatCurrency(buildCost);
     document.getElementById('kitchenCost').textContent = formatCurrency(kitchenCost);
@@ -1027,6 +1045,9 @@ function calculate() {
     document.getElementById('constructionWithContingency').textContent = formatCurrency(constructionWithContingency);
     document.getElementById('vatCost').textContent = formatCurrency(vatCost);
     document.getElementById('totalConstructionVAT').textContent = formatCurrency(totalConstructionVAT);
+    document.getElementById('subtotalSurveys').textContent = formatCurrency(subtotalSurveys);
+    document.getElementById('subtotalProfessional').textContent = formatCurrency(subtotalProfessional);
+    document.getElementById('subtotalStatutory').textContent = formatCurrency(subtotalStatutory);
     
     document.getElementById('ordnanceMapsDisplay').textContent = formatCurrency(ordnanceMaps);
     document.getElementById('measuredSurveyDisplay').textContent = formatCurrency(measuredSurvey);
@@ -1040,14 +1061,17 @@ function calculate() {
     document.getElementById('contractAdminDisplay').textContent = formatCurrency(contractAdminFee);
     document.getElementById('planningDisplay').textContent = formatCurrency(planningFee);
     document.getElementById('warrantDisplay').textContent = formatCurrency(warrantFee);
-    document.getElementById('totalFees').textContent = formatCurrency(totalFees);
-    
-    document.getElementById('grandTotal').textContent = formatCurrency(grandTotal);
-}
 
-function formatCurrency(value) {
+    document.getElementById('subtotalSurveys').textContent = formatCurrency(subtotalSurveys);
+    document.getElementById('subtotalProfessional').textContent = formatCurrency(subtotalProfessional);
+    document.getElementById('subtotalStatutory').textContent = formatCurrency(subtotalStatutory);
+
+    document.getElementById('grandTotal').textContent = formatCurrency(grandTotal);
+    }
+
+    function formatCurrency(value) {
     return '£' + Math.round(value).toLocaleString('en-GB');
-}
+    }
 
 function generateExcel() {
     const data = collectData();
@@ -1239,9 +1263,14 @@ function collectData() {
     const warrantFee = document.getElementById('warrantRequired').checked ? 
         Math.round(parseFloat(document.getElementById('warrantFee').value) || 0) : 0;
     
-    const totalFees = ordnanceMaps + measuredSurvey + groundSurvey + billOfQuantities + 
-                     engineerFee + conceptFee + planningDesignFee + warrantDesignFee + 
-                     tenderFee + contractAdminFee + planningFee + warrantFee;
+    // Calculate subtotals
+    const subtotalSurveys = ordnanceMaps + measuredSurvey + groundSurvey;
+    const subtotalProfessional = billOfQuantities + engineerFee + conceptFee + planningDesignFee + warrantDesignFee + tenderFee + contractAdminFee;
+    const subtotalStatutory = planningFee + warrantFee;
+
+    const totalFees = subtotalSurveys + subtotalProfessional + subtotalStatutory;
+
+    // Grand total
     const grandTotal = totalConstructionVAT + totalFees;
     
     return {
