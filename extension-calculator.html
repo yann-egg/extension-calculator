@@ -523,10 +523,10 @@
             </div>
 
             <div class="fee-stage">
-                <div class="fee-stage-title">Contract Administration (RIBA Stage 6) - Optional</div>
+                <div class="fee-stage-title">Site Support or Contract Administration (RIBA Stage 6) - Optional</div>
                 <div class="checkbox-group">
                     <input type="checkbox" id="includeContractAdmin">
-                    <label for="includeContractAdmin">Include Contract Administration</label>
+                    <label for="includeContractAdmin">Include Site Support or Contract Administration</label>
                 </div>
                 <div id="contractAdminFeeSection" style="display: none; margin-top: 10px;">
                     <div class="input-group">
@@ -714,7 +714,7 @@
         </div>
 
         <div class="result-row">
-            <span class="result-label">Architect - Contract Administration <span class="range-indicator" id="contractAdminMethod"></span></span>
+            <span class="result-label">Architect - Site Support / Contract Administration <span class="range-indicator" id="contractAdminMethod"></span></span>
             <span class="result-value" id="contractAdminDisplay">£0</span>
         </div>
         
@@ -988,7 +988,7 @@ function calculate() {
         document.getElementById('tenderMethod').textContent = '';
     }
     
-    // Contract Admin stage
+    // Site Support / Contract Admin stage
     let contractAdminFee = 0;
     if (document.getElementById('includeContractAdmin').checked) {
         const contractAdminMethod = document.getElementById('contractAdminFeeMethod').value;
@@ -1113,7 +1113,7 @@ function generateExcel() {
         ['Architect - Planning Application:', '£' + data.planningDesignFee.toLocaleString()],
         ['Architect - Building Warrant:', '£' + data.warrantDesignFee.toLocaleString()],
         ['Architect - Tender Support:', '£' + data.tenderFee.toLocaleString()],
-        ['Architect - Contract Administration:', '£' + data.contractAdminFee.toLocaleString()],
+        ['Architect - Site Support / Contract Administration:', '£' + data.contractAdminFee.toLocaleString()],
         ['Planning Permission Fee:', '£' + data.planningFee.toLocaleString()],
         ['Building Warrant Fee:', '£' + data.warrantFee.toLocaleString()],
         ['Total Fees:', '£' + data.totalFees.toLocaleString()],
@@ -1138,7 +1138,7 @@ function generateExcel() {
         ['- Planning Application (Stage 3): typically 2.5% of construction cost'],
         ['- Building Warrant (Stage 4): typically 2.5% of construction cost'],
         ['- Tender Support (Stage 5): typically 1.0% of construction cost'],
-        ['- Contract Administration (Stage 6): typically 2.0% or hourly/weekly rate'],
+        ['- Site Support / Contract Administration (Stage 6): typically 2.0% or hourly/weekly rate'],
         [''],
         ['This estimate is indicative and based on typical market rates for Scotland in 2026.'],
         ['Final costs depend on specification, site conditions, and contractor pricing.']
@@ -1407,3 +1407,4 @@ calculate();
     </script>
 </body>
 </html>
+
