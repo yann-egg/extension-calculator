@@ -1417,16 +1417,12 @@ function resetForm() {
         document.getElementById('warrantDesignPercentageGroup').style.display = 'block';
         document.getElementById('warrantDesignFixedGroup').style.display = 'none';
         
-        document.getElementById('includeTender').checked = false;
-        document.getElementById('tenderFeeSection').style.display = 'none';
         document.getElementById('tenderFeeMethod').value = 'percentage';
         document.getElementById('tenderPercentage').value = '1.5';
         document.getElementById('tenderFixed').value = '';
         document.getElementById('tenderPercentageGroup').style.display = 'block';
         document.getElementById('tenderFixedGroup').style.display = 'none';
         
-        document.getElementById('includeContractAdmin').checked = false;
-        document.getElementById('contractAdminFeeSection').style.display = 'none';
         document.getElementById('contractAdminFeeMethod').value = 'percentage';
         document.getElementById('contractAdminPercentage').value = '2.0';
         document.getElementById('contractAdminFixed').value = '';
@@ -1440,11 +1436,11 @@ function resetForm() {
         document.getElementById('contractAdminWeeklyGroup').style.display = 'none';
         
         document.getElementById('planningRequired').checked = false;
-        document.getElementById('warrantRequired').checked = true;
+        document.getElementById('warrantRequired').checked = false;
         document.getElementById('planningFeeInput').style.display = 'none';
-        document.getElementById('warrantFeeInput').style.display = 'block';
-        document.getElementById('planningFee').value = '400';
-        document.getElementById('warrantFee').value = '400';
+        document.getElementById('warrantFeeInput').style.display = 'none';
+        document.getElementById('planningFee').value = '300';
+        document.getElementById('warrantFee').value = '300';
         
         document.getElementById('contingencyPercent').value = '15';
         
