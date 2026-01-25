@@ -613,7 +613,8 @@
             </div>
             <div class="sub-input" id="planningFeeInput" style="display: none;">
                 <label>Planning Fee (£)</label>
-                <input type="number" id="planningFee" placeholder="~300 - 500" min="0" value="300">
+                <input type="number" id="planningFee" value="357" min="0" readonly>
+            <div class="hint">Standard fee for domestic extensions (Edinburgh Council, July 2025). Retrospective applications incur 25% surcharge (£446.25).</div>
             </div>
             
             <div class="checkbox-group">
@@ -622,28 +623,34 @@
             </div>
             <div class="sub-input" id="warrantFeeInput" style="display: none;">
                 <label>Building Warrant Fee (£)</label>
-                <input type="number" id="warrantFee" placeholder="~300 - 500" min="0" value="300">
+                <input type="number" id="warrantFee" placeholder="Auto-calculated" min="0" readonly>
+            <div class="hint">Auto-calculated based on construction cost (Edinburgh Council rates, April 2025). Fees may vary by local authority.</div>
             </div>
         </div>
         
         <div class="form-section">
             <div class="section-title">Contingency</div>
             
-            <div class="input-group">
-                <label>Contingency Percentage (% of construction cost)</label>
-                <select id="contingencyPercent">
-                    <option value="10">10% (Simple projects)</option>
-                    <option value="12.5">12.5%</option>
-                    <option value="15" selected>15% (Standard)</option>
-                    <option value="17.5">17.5%</option>
-                    <option value="20">20% (Complex projects)</option>
-                    <option value="25">25% (Very complex/two-storey)</option>
-                </select>
-            </div>
-            
-            <div class="note">
-                Contingency covers unexpected costs during construction (site conditions, specification changes, unforeseen structural work).
-            </div>
+           <div class="input-group">
+    <label>Contingency Percentage (% of construction cost)</label>
+    <select id="contingencyPercent">
+        <option value="0">0% (Not recommended)</option>
+        <option value="10">10% (Simple projects)</option>
+        <option value="12.5">12.5%</option>
+        <option value="15" selected>15% (Standard)</option>
+        <option value="17.5">17.5%</option>
+        <option value="20">20% (Complex projects)</option>
+        <option value="25">25% (Very complex/two-storey)</option>
+    </select>
+</div>
+
+<div class="note">
+    Contingency covers unexpected costs during construction (site conditions, specification changes, unforeseen structural work).
+</div>
+
+<div class="note" id="contingencyWarning" style="display: none; border-left-color: #D32F2F; background: #FFEBEE;">
+    <strong>⚠ Warning:</strong> A contingency budget is strongly recommended for renovations and extensions to existing buildings. Unforeseen issues (hidden structural problems, services conflicts, ground conditions) are common and can significantly impact costs. Most professionals recommend a minimum 10-15% contingency.
+</div>
         </div>
         
         <div class="results">
@@ -853,6 +860,80 @@ function validateCustomCost(value, type) {
     }
 }
 
+// Calculate Building Warrant fee based on Edinburgh Council rates (April 2025)
+function calculateBuildingWarrantFee(constructionCost) {
+    if (constructionCost <= 0) return 0;
+    
+    // Table 1a: Values up to £100,000 (fixed rates)
+    if (constructionCost <= 5000) return 210;
+    if (constructionCost <= 5500) return 231;
+    if (constructionCost <= 6000) return 252;
+    if (constructionCost <= 6500) return 273;
+    if (constructionCost <= 7000) return 294;
+    if (constructionCost <= 7500) return 315;
+    if (constructionCost <= 8000) return 336;
+    if (constructionCost <= 8500) return 357;
+    if (constructionCost <= 9000) return 378;
+    if (constructionCost <= 9500) return 399;
+    if (constructionCost <= 10000) return 420;
+    if (constructionCost <= 11000) return 443;
+    if (constructionCost <= 12000) return 466;
+    if (constructionCost <= 13000) return 489;
+    if (constructionCost <= 14000) return 512;
+    if (constructionCost <= 15000) return 535;
+    if (constructionCost <= 16000) return 558;
+    if (constructionCost <= 17000) return 581;
+    if (constructionCost <= 18000) return 604;
+    if (constructionCost <= 19000) return 627;
+    if (constructionCost <= 20000) return 650;
+    if (constructionCost <= 30000) return 728;
+    if (constructionCost <= 40000) return 806;
+    if (constructionCost <= 50000) return 884;
+    if (constructionCost <= 60000) return 962;
+    if (constructionCost <= 70000) return 1040;
+    if (constructionCost <= 80000) return 1118;
+    if (constructionCost <= 90000) return 1196;
+    if (constructionCost <= 100000) return 1274;
+    
+    // Table 1b: Values over £100,000
+    if (constructionCost <= 120000) return 1402;
+    if (constructionCost <= 140000) return 1530;
+    if (constructionCost <= 160000) return 1658;
+    if (constructionCost <= 180000) return 1786;
+    if (constructionCost <= 200000) return 1914;
+    if (constructionCost <= 220000) return 2042;
+    if (constructionCost <= 240000) return 2170;
+    if (constructionCost <= 260000) return 2298;
+    if (constructionCost <= 280000) return 2426;
+    if (constructionCost <= 300000) return 2554;
+    if (constructionCost <= 320000) return 2682;
+    if (constructionCost <= 340000) return 2810;
+    if (constructionCost <= 360000) return 2938;
+    if (constructionCost <= 380000) return 3066;
+    if (constructionCost <= 400000) return 3194;
+    if (constructionCost <= 420000) return 3322;
+    if (constructionCost <= 440000) return 3450;
+    if (constructionCost <= 460000) return 3578;
+    if (constructionCost <= 480000) return 3706;
+    if (constructionCost <= 500000) return 3834;
+    if (constructionCost <= 550000) return 4055;
+    if (constructionCost <= 600000) return 4276;
+    if (constructionCost <= 650000) return 4497;
+    if (constructionCost <= 700000) return 4718;
+    if (constructionCost <= 750000) return 4939;
+    if (constructionCost <= 800000) return 5160;
+    if (constructionCost <= 850000) return 5381;
+    if (constructionCost <= 900000) return 5602;
+    if (constructionCost <= 950000) return 5823;
+    if (constructionCost <= 1000000) return 6044;
+    
+    // Over £1 million: £6,044 + £315 for every £100,000 or part thereof
+    const baseFee = 6044;
+    const excess = constructionCost - 1000000;
+    const additionalUnits = Math.ceil(excess / 100000);
+    return baseFee + (additionalUnits * 315);
+}
+
 document.getElementById('customSingleCost').addEventListener('input', function() {
     validateCustomCost(parseFloat(this.value), 'single');
     calculate();
@@ -906,6 +987,16 @@ function calculate() {
     const extensionType = document.getElementById('extensionType').value;
     const floorArea = parseFloat(document.getElementById('floorArea').value) || 0;
     const costRange = document.getElementById('costRange').value;
+
+    // Show warning when contingency is set to 0%
+document.getElementById('contingencyPercent').addEventListener('change', function() {
+    const warningDiv = document.getElementById('contingencyWarning');
+    if (this.value === '0') {
+        warningDiv.style.display = 'block';
+    } else {
+        warningDiv.style.display = 'none';
+    }
+});
     
     // Determine cost per m²
     let costPerSqm = 0;
@@ -1065,11 +1156,24 @@ const contractAdminFeeVAT = document.getElementById('contractAdminVAT').checked 
 const contractAdminFee = contractAdminFeeBase + contractAdminFeeVAT;
     
     // Statutory fees
-    const planningFee = document.getElementById('planningRequired').checked ? 
-        (parseFloat(document.getElementById('planningFee').value) || 0) : 0;
+    // Planning Permission fee - fixed at £357 for domestic extensions
+let planningFee = 0;
+if (document.getElementById('planningRequired').checked) {
+    planningFee = 357;
+    document.getElementById('planningFee').value = 357;
+} else {
+    document.getElementById('planningFee').value = '';
+}
     
-    const warrantFee = document.getElementById('warrantRequired').checked ? 
-        (parseFloat(document.getElementById('warrantFee').value) || 0) : 0;
+    // Auto-calculate Building Warrant fee when checkbox is checked
+let warrantFee = 0;
+if (document.getElementById('warrantRequired').checked) {
+    const autoCalculatedFee = calculateBuildingWarrantFee(totalConstruction);
+    document.getElementById('warrantFee').value = autoCalculatedFee;
+    warrantFee = autoCalculatedFee;
+} else {
+    document.getElementById('warrantFee').value = '';
+}
     
     // Calculate subtotals
     const subtotalSurveys = ordnanceMaps + measuredSurvey + groundSurvey;
@@ -1439,8 +1543,8 @@ function resetForm() {
         document.getElementById('warrantRequired').checked = false;
         document.getElementById('planningFeeInput').style.display = 'none';
         document.getElementById('warrantFeeInput').style.display = 'none';
-        document.getElementById('planningFee').value = '300';
-        document.getElementById('warrantFee').value = '300';
+        document.getElementById('planningFee').value = '';
+        document.getElementById('warrantFee').value = '';
         
         document.getElementById('contingencyPercent').value = '15';
         
