@@ -1631,33 +1631,69 @@ function submitEmailForm(event) {
     submitBtn.disabled = true;
     submitBtn.textContent = 'Sending...';
     
-    // Collect data
-    const data = collectData(); // Your existing function
+    // Collect ALL calculator data
+    const calcData = collectData();
+    
+    // Prepare complete data package for Google Apps Script
     const formData = {
         name: document.getElementById('userName').value,
         email: document.getElementById('userEmail').value,
-        phone: document.getElementById('userPhone').value,
-        address: document.getElementById('projectAddress').value,
-        totalCost: data.grandTotal,
-        extensionType: document.getElementById('extensionType').value === 'single' ? 'Single-storey' : 'Two-storey',
-        floorArea: document.getElementById('floorArea').value
+        phone: document.getElementById('userPhone').value || '',
+        address: document.getElementById('projectAddress').value || '',
+        extensionType: calcData.extensionType,
+        floorArea: calcData.floorArea,
+        totalCost: calcData.grandTotal,
+        costBreakdown: {
+            // Construction
+            buildCost: calcData.buildCost,
+            kitchenCost: calcData.kitchenCost,
+            bathroomCost: calcData.bathroomCost,
+            openingsCost: calcData.openingsCost,
+            totalConstruction: calcData.totalConstruction,
+            contingency: calcData.contingencyCost,
+            constructionWithContingency: calcData.constructionWithContingency,
+            vat: calcData.vatCost,
+            constructionTotal: calcData.totalConstructionVAT,
+            
+            // Surveys
+            ordnanceMaps: calcData.ordnanceMaps,
+            measuredSurvey: calcData.measuredSurvey,
+            groundSurvey: calcData.groundSurvey,
+            surveysTotal: calcData.ordnanceMaps + calcData.measuredSurvey + calcData.groundSurvey,
+            
+            // Professional Fees
+            billOfQuantities: calcData.billOfQuantities,
+            engineerFee: calcData.engineerFee,
+            conceptFee: calcData.conceptFee,
+            planningFee: calcData.planningDesignFee,
+            warrantFee: calcData.warrantDesignFee,
+            tenderFee: calcData.tenderFee,
+            constructionFee: calcData.contractAdminFee,
+            professionalFees: calcData.totalFees - (calcData.planningFee + calcData.warrantFee) - (calcData.ordnanceMaps + calcData.measuredSurvey + calcData.groundSurvey),
+            
+            // Statutory Fees
+            planningPermissionFee: calcData.planningFee,
+            buildingWarrantFee: calcData.warrantFee,
+            statutoryFees: calcData.planningFee + calcData.warrantFee,
+            
+            // Summary
+            totalFees: calcData.totalFees
+        }
     };
     
     // Send to Google Apps Script
     fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors', // Important for Google Apps Script
+        mode: 'no-cors',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData)
     })
     .then(() => {
-        // Success (no-cors means we can't read response, but that's OK)
-        formMessage.innerHTML = '<div style="color: green;">✓ Success! Check your email - your PDF is on its way (arrives within 60 seconds).</div>';
+        formMessage.innerHTML = '<div style="color: green; background: #e8f5e9; padding: 10px; border-radius: 4px;">✓ Success! Check your email - your PDF is on its way (arrives within 60 seconds).</div>';
         submitBtn.textContent = 'Sent!';
         
-        // Close modal after 3 seconds
         setTimeout(() => {
             closeEmailModal();
             submitBtn.disabled = false;
@@ -1665,9 +1701,11 @@ function submitEmailForm(event) {
         }, 3000);
     })
     .catch((error) => {
-        formMessage.innerHTML = '<div style="color: red;">Error sending. Please try again or email us directly.</div>';
+        formMessage.innerHTML = '<div style="color: red; background: #ffebee; padding: 10px; border-radius: 4px;">⚠ Error sending. Please try again or email us directly.</div>';
         submitBtn.disabled = false;
         submitBtn.textContent = 'Send Me the PDF Report';
+    });
+}
     });
 }
 
