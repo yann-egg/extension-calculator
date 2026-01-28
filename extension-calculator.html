@@ -796,9 +796,59 @@
             Get a Professional Fee Quote for this Project →
             </a>
         <button class="btn btn-primary" onclick="generateExcel()" style="display: none;">Download Excel</button>
-        <button class="btn" onclick="window.print()">Print PDF</button>
+        <button class="btn btn-primary" onclick="showEmailModal()">📄 Get PDF Report</button>
         <button class="btn" onclick="resetForm()">Reset</button>
         </div>
+        <!-- Email Capture Modal -->
+<div id="emailModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 40px; border-radius: 8px; max-width: 500px; width: 90%; position: relative;">
+        <button onclick="closeEmailModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+        
+        <h2 style="font-family: 'Poppins', sans-serif; font-weight: 400; font-size: 1.5rem; margin-bottom: 10px;">Get Your Professional PDF Report</h2>
+        
+        <p style="font-family: 'Poppins', sans-serif; font-weight: 300; font-size: 0.875rem; margin-bottom: 25px;">
+            Enter your details to receive a comprehensive PDF cost breakdown.
+        </p>
+        
+        <form id="pdfRequestForm" onsubmit="submitEmailForm(event)">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-family: 'Poppins', sans-serif; font-weight: 300; font-size: 0.875rem;">Name *</label>
+                <input type="text" id="userName" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Poppins', sans-serif;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-family: 'Poppins', sans-serif; font-weight: 300; font-size: 0.875rem;">Email *</label>
+                <input type="email" id="userEmail" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Poppins', sans-serif;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-family: 'Poppins', sans-serif; font-weight: 300; font-size: 0.875rem;">Phone (optional)</label>
+                <input type="tel" id="userPhone" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Poppins', sans-serif;">
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: flex; align-items: start; font-family: 'Poppins', sans-serif; font-weight: 300; font-size: 0.75rem;">
+                    <input type="checkbox" required style="margin-right: 8px; margin-top: 2px;">
+                    <span>I agree to receive the PDF report and occasional project updates from JKA Architecture *</span>
+                </label>
+            </div>
+            
+            <button type="submit" id="submitBtn" style="width: 100%; padding: 12px; background: #191919; color: white; border: none; border-radius: 4px; font-family: 'Poppins', sans-serif; font-weight: 400; cursor: pointer;">
+                Send Me the PDF Report
+            </button>
+            
+            <div id="formMessage" style="margin-top: 15px; text-align: center; font-family: 'Poppins', sans-serif; font-size: 0.875rem;"></div>
+        </form>
+        
+        <div style="margin-top: 20px; padding: 15px; background: #F9F9F9; border-radius: 4px; font-size: 0.75rem;">
+            <strong>What you'll get:</strong><br>
+            ✓ Detailed cost breakdown<br>
+            ✓ Project timeline estimates<br>
+            ✓ Next steps checklist<br>
+            ✓ Follow-up emails with extension tips
+        </div>
+    </div>
+</div>
     </div>
     
     <script>
@@ -1554,6 +1604,79 @@ function resetForm() {
 
 // Initial calculation
 calculate();
+// ========================================
+// IMPORTANT: UPDATE THIS URL
+// ========================================
+// After deploying Google Apps Script, paste your web app URL here
+// It should look like: https://script.google.com/macros/s/AKfycbz.../exec
+const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+
+function showEmailModal() {
+    document.getElementById('emailModal').style.display = 'flex';
+}
+
+function closeEmailModal() {
+    document.getElementById('emailModal').style.display = 'none';
+    document.getElementById('pdfRequestForm').reset();
+    document.getElementById('formMessage').innerHTML = '';
+}
+
+function submitEmailForm(event) {
+    event.preventDefault();
+    
+    const submitBtn = document.getElementById('submitBtn');
+    const formMessage = document.getElementById('formMessage');
+    
+    // Disable button
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+    
+    // Collect data
+    const data = collectData(); // Your existing function
+    const formData = {
+        name: document.getElementById('userName').value,
+        email: document.getElementById('userEmail').value,
+        phone: document.getElementById('userPhone').value,
+        address: document.getElementById('projectAddress').value,
+        totalCost: data.grandTotal,
+        extensionType: document.getElementById('extensionType').value === 'single' ? 'Single-storey' : 'Two-storey',
+        floorArea: document.getElementById('floorArea').value
+    };
+    
+    // Send to Google Apps Script
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', // Important for Google Apps Script
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(() => {
+        // Success (no-cors means we can't read response, but that's OK)
+        formMessage.innerHTML = '<div style="color: green;">✓ Success! Check your email - your PDF is on its way (arrives within 60 seconds).</div>';
+        submitBtn.textContent = 'Sent!';
+        
+        // Close modal after 3 seconds
+        setTimeout(() => {
+            closeEmailModal();
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send Me the PDF Report';
+        }, 3000);
+    })
+    .catch((error) => {
+        formMessage.innerHTML = '<div style="color: red;">Error sending. Please try again or email us directly.</div>';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Me the PDF Report';
+    });
+}
+
+// Close modal when clicking outside
+document.getElementById('emailModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeEmailModal();
+    }
+});
     </script>
 </body>
 </html>
