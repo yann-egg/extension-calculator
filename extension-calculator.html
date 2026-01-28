@@ -1434,17 +1434,16 @@ function collectData() {
     }
     
     let tenderFee = 0;
-    if (document.getElementById('includeTender').checked) {
-        if (document.getElementById('tenderFeeMethod').value === 'percentage') {
-            const percent = parseFloat(document.getElementById('tenderPercentage').value) || 0;
-            tenderFee = Math.round(totalConstruction * (percent / 100));
-        } else {
-            tenderFee = Math.round(parseFloat(document.getElementById('tenderFixed').value) || 0);
-        }
+    if (document.getElementById('tenderFeeMethod').value === 'percentage') {
+        const percent = parseFloat(document.getElementById('tenderPercentage').value) || 0;
+        tenderFee = Math.round(totalConstruction * (percent / 100));
+    } else {
+        tenderFee = Math.round(parseFloat(document.getElementById('tenderFixed').value) || 0);
     }
     
     let contractAdminFee = 0;
-    if (document.getElementById('includeContractAdmin').checked) {
+    const contractAdminCheckbox = document.getElementById('includeContractAdmin');
+    if (contractAdminCheckbox && contractAdminCheckbox.checked) {
         const method = document.getElementById('contractAdminFeeMethod').value;
         if (method === 'percentage') {
             const percent = parseFloat(document.getElementById('contractAdminPercentage').value) || 0;
