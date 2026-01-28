@@ -796,7 +796,7 @@
             Get a Professional Fee Quote for this Project →
             </a>
         <button class="btn btn-primary" onclick="generateExcel()" style="display: none;">Download Excel</button>
-        <button class="btn btn-primary" onclick="showEmailModal()">📄 Get PDF Report</button>
+        <button class="btn" onclick="window.print()">Print PDF</button>
         <button class="btn" onclick="resetForm()">Reset</button>
         </div>
         <!-- Email Capture Modal -->
@@ -1604,11 +1604,7 @@ function resetForm() {
 
 // Initial calculation
 calculate();
-// ========================================
-// IMPORTANT: UPDATE THIS URL
-// ========================================
-// After deploying Google Apps Script, paste your web app URL here
-// It should look like: https://script.google.com/macros/s/AKfycbz.../exec
+// Google Apps Script Web App URL - UPDATE THIS!
 const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
 
 function showEmailModal() {
@@ -1704,8 +1700,6 @@ function submitEmailForm(event) {
         formMessage.innerHTML = '<div style="color: red; background: #ffebee; padding: 10px; border-radius: 4px;">⚠ Error sending. Please try again or email us directly.</div>';
         submitBtn.disabled = false;
         submitBtn.textContent = 'Send Me the PDF Report';
-    });
-}
     });
 }
 
