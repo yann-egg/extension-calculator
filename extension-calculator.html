@@ -1409,55 +1409,76 @@ function collectData() {
     const engineerFee = document.getElementById('includeEngineer').checked ?
         Math.round(parseFloat(document.getElementById('engineerFee').value) || 0) : 0;
     
+    const conceptFeeMethod = document.getElementById('conceptFeeMethod').value;
     let conceptFee = 0;
-    if (document.getElementById('conceptFeeMethod').value === 'percentage') {
+    let conceptMethod = '';
+    if (conceptFeeMethod === 'percentage') {
         const percent = parseFloat(document.getElementById('conceptPercentage').value) || 0;
         conceptFee = Math.round(totalConstruction * (percent / 100));
+        conceptMethod = `${percent}%`;
     } else {
         conceptFee = Math.round(parseFloat(document.getElementById('conceptFixed').value) || 0);
+        conceptMethod = 'fixed';
     }
     
+    const planningDesignFeeMethod = document.getElementById('planningDesignFeeMethod').value;
     let planningDesignFee = 0;
-    if (document.getElementById('planningDesignFeeMethod').value === 'percentage') {
+    let planningMethod = '';
+    if (planningDesignFeeMethod === 'percentage') {
         const percent = parseFloat(document.getElementById('planningDesignPercentage').value) || 0;
         planningDesignFee = Math.round(totalConstruction * (percent / 100));
+        planningMethod = `${percent}%`;
     } else {
         planningDesignFee = Math.round(parseFloat(document.getElementById('planningDesignFixed').value) || 0);
+        planningMethod = 'fixed';
     }
     
+    const warrantDesignFeeMethod = document.getElementById('warrantDesignFeeMethod').value;
     let warrantDesignFee = 0;
-    if (document.getElementById('warrantDesignFeeMethod').value === 'percentage') {
+    let warrantMethod = '';
+    if (warrantDesignFeeMethod === 'percentage') {
         const percent = parseFloat(document.getElementById('warrantDesignPercentage').value) || 0;
         warrantDesignFee = Math.round(totalConstruction * (percent / 100));
+        warrantMethod = `${percent}%`;
     } else {
         warrantDesignFee = Math.round(parseFloat(document.getElementById('warrantDesignFixed').value) || 0);
+        warrantMethod = 'fixed';
     }
     
+    const tenderFeeMethod = document.getElementById('tenderFeeMethod').value;
     let tenderFee = 0;
-    if (document.getElementById('tenderFeeMethod').value === 'percentage') {
+    let tenderMethod = '';
+    if (tenderFeeMethod === 'percentage') {
         const percent = parseFloat(document.getElementById('tenderPercentage').value) || 0;
         tenderFee = Math.round(totalConstruction * (percent / 100));
+        tenderMethod = `${percent}%`;
     } else {
         tenderFee = Math.round(parseFloat(document.getElementById('tenderFixed').value) || 0);
+        tenderMethod = 'fixed';
     }
     
     let contractAdminFee = 0;
+    let constructionMethod = '';
     const contractAdminCheckbox = document.getElementById('includeContractAdmin');
     if (contractAdminCheckbox && contractAdminCheckbox.checked) {
         const method = document.getElementById('contractAdminFeeMethod').value;
         if (method === 'percentage') {
             const percent = parseFloat(document.getElementById('contractAdminPercentage').value) || 0;
             contractAdminFee = Math.round(totalConstruction * (percent / 100));
+            constructionMethod = `${percent}%`;
         } else if (method === 'fixed') {
             contractAdminFee = Math.round(parseFloat(document.getElementById('contractAdminFixed').value) || 0);
+            constructionMethod = 'fixed';
         } else if (method === 'hourly') {
             const rate = parseFloat(document.getElementById('contractAdminHourlyRate').value) || 0;
             const hours = parseFloat(document.getElementById('contractAdminHours').value) || 0;
             contractAdminFee = Math.round(rate * hours);
+            constructionMethod = `£${rate}/hr × ${hours}hrs`;
         } else if (method === 'weekly') {
             const rate = parseFloat(document.getElementById('contractAdminWeeklyRate').value) || 0;
             const weeks = parseFloat(document.getElementById('contractAdminWeeks').value) || 0;
             contractAdminFee = Math.round(rate * weeks);
+            constructionMethod = `£${rate}/wk × ${weeks}wks`;
         }
     }
     
@@ -1504,6 +1525,11 @@ function collectData() {
         warrantDesignFee: warrantDesignFee,
         tenderFee: tenderFee,
         contractAdminFee: contractAdminFee,
+        conceptMethod: conceptMethod,
+        planningMethod: planningMethod,
+        warrantMethod: warrantMethod,
+        tenderMethod: tenderMethod,
+        constructionMethod: constructionMethod,
         planningFee: planningFee,
         warrantFee: warrantFee,
         totalFees: totalFees,
@@ -1604,7 +1630,7 @@ function resetForm() {
 // Initial calculation
 calculate();
 // Google Apps Script Web App URL - UPDATE THIS!
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyoWQHAY9hAugX1DO91XhbwIgBjlFKQkx8ZXIQ-6W4jzt4W6N46tH3xHd9ko73tY4zPfA/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyacsmYW47sRHXFzrwdEm6RAUYGYkcGQ00NVg9mKlcAFAcYYMzp_WLaMdeus7DX7hMcrw/exec';
 
 function showEmailModal() {
     document.getElementById('emailModal').style.display = 'flex';
@@ -1637,6 +1663,7 @@ function submitEmailForm(event) {
         address: document.getElementById('projectAddress').value || '',
         extensionType: calcData.extensionType,
         floorArea: calcData.floorArea,
+        contingencyPercent: calcData.contingencyPercent,
         totalCost: calcData.grandTotal,
         costBreakdown: {
             // Construction
@@ -1644,6 +1671,7 @@ function submitEmailForm(event) {
             kitchenCost: calcData.kitchenCost,
             bathroomCost: calcData.bathroomCost,
             openingsCost: calcData.openingsCost,
+            openingsMeters: calcData.openingsMeters,
             totalConstruction: calcData.totalConstruction,
             contingency: calcData.contingencyCost,
             constructionWithContingency: calcData.constructionWithContingency,
@@ -1664,6 +1692,11 @@ function submitEmailForm(event) {
             warrantFee: calcData.warrantDesignFee,
             tenderFee: calcData.tenderFee,
             constructionFee: calcData.contractAdminFee,
+            conceptMethod: calcData.conceptMethod,
+            planningMethod: calcData.planningMethod,
+            warrantMethod: calcData.warrantMethod,
+            tenderMethod: calcData.tenderMethod,
+            constructionMethod: calcData.constructionMethod,
             professionalFees: calcData.totalFees - (calcData.planningFee + calcData.warrantFee) - (calcData.ordnanceMaps + calcData.measuredSurvey + calcData.groundSurvey),
             
             // Statutory Fees
@@ -1711,5 +1744,3 @@ document.getElementById('emailModal')?.addEventListener('click', function(e) {
     </script>
 </body>
 </html>
-
-
