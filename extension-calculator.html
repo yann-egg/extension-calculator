@@ -1740,7 +1740,7 @@ function submitEmailForm(event) {
     };
     
     // Send to Google Apps Script
-    fetch(GOOGLE_SCRIPT_URL, {
+    fetch(GOOGLE_SCRIPT_URL + '?v=' + Date.now(), {
         method: 'POST',
         mode: 'no-cors',
         headers: {
@@ -1774,5 +1774,6 @@ document.getElementById('emailModal')?.addEventListener('click', function(e) {
     </script>
 </body>
 </html>
+
 
 
