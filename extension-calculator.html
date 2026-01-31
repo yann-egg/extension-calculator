@@ -1398,89 +1398,120 @@ function collectData() {
     const vatCost = Math.round(constructionWithContingency * 0.20);
     const totalConstructionVAT = constructionWithContingency + vatCost;
     
-    const ordnanceMaps = document.getElementById('ordnanceMaps').checked ? 
-        Math.round(parseFloat(document.getElementById('ordnanceMapsCost').value) || 0) : 0;
-    const measuredSurvey = document.getElementById('measuredSurvey').checked ? 
-        Math.round(parseFloat(document.getElementById('measuredSurveyCost').value) || 0) : 0;
-    const groundSurvey = document.getElementById('groundSurvey').checked ? 
-        Math.round(parseFloat(document.getElementById('groundSurveyCost').value) || 0) : 0;
-    const billOfQuantities = document.getElementById('billOfQuantities').checked ? 
-        Math.round(parseFloat(document.getElementById('billOfQuantitiesCost').value) || 0) : 0;
-    const engineerFee = document.getElementById('includeEngineer').checked ?
-        Math.round(parseFloat(document.getElementById('engineerFee').value) || 0) : 0;
+    // Surveys with VAT
+    const ordnanceMapsBase = document.getElementById('ordnanceMaps').checked ? 
+        (parseFloat(document.getElementById('ordnanceMapsCost').value) || 0) : 0;
+    const ordnanceMapsVAT = document.getElementById('ordnanceMapsVAT').checked ? ordnanceMapsBase * 0.20 : 0;
+    const ordnanceMaps = Math.round(ordnanceMapsBase + ordnanceMapsVAT);
+
+    const measuredSurveyBase = document.getElementById('measuredSurvey').checked ? 
+        (parseFloat(document.getElementById('measuredSurveyCost').value) || 0) : 0;
+    const measuredSurveyVAT = document.getElementById('measuredSurveyVAT').checked ? measuredSurveyBase * 0.20 : 0;
+    const measuredSurvey = Math.round(measuredSurveyBase + measuredSurveyVAT);
+
+    const groundSurveyBase = document.getElementById('groundSurvey').checked ? 
+        (parseFloat(document.getElementById('groundSurveyCost').value) || 0) : 0;
+    const groundSurveyVAT = document.getElementById('groundSurveyVAT').checked ? groundSurveyBase * 0.20 : 0;
+    const groundSurvey = Math.round(groundSurveyBase + groundSurveyVAT);
+
+    // Professional fees with VAT
+    const billOfQuantitiesBase = document.getElementById('billOfQuantities').checked ? 
+        (parseFloat(document.getElementById('billOfQuantitiesCost').value) || 0) : 0;
+    const billOfQuantitiesVAT = document.getElementById('boqVAT').checked ? billOfQuantitiesBase * 0.20 : 0;
+    const billOfQuantities = Math.round(billOfQuantitiesBase + billOfQuantitiesVAT);
+
+    const engineerFeeBase = document.getElementById('includeEngineer').checked ?
+        (parseFloat(document.getElementById('engineerFee').value) || 0) : 0;
+    const engineerFeeVAT = document.getElementById('engineerVAT').checked ? engineerFeeBase * 0.20 : 0;
+    const engineerFee = Math.round(engineerFeeBase + engineerFeeVAT);
     
+    // Concept Design with VAT
     const conceptFeeMethod = document.getElementById('conceptFeeMethod').value;
-    let conceptFee = 0;
+    let conceptFeeBase = 0;
     let conceptMethod = '';
     if (conceptFeeMethod === 'percentage') {
         const percent = parseFloat(document.getElementById('conceptPercentage').value) || 0;
-        conceptFee = Math.round(totalConstruction * (percent / 100));
+        conceptFeeBase = totalConstruction * (percent / 100);
         conceptMethod = `${percent}%`;
     } else {
-        conceptFee = Math.round(parseFloat(document.getElementById('conceptFixed').value) || 0);
+        conceptFeeBase = parseFloat(document.getElementById('conceptFixed').value) || 0;
         conceptMethod = 'fixed';
     }
+    const conceptFeeVAT = document.getElementById('conceptVAT').checked ? conceptFeeBase * 0.20 : 0;
+    const conceptFee = Math.round(conceptFeeBase + conceptFeeVAT);
     
+    // Planning Design with VAT
     const planningDesignFeeMethod = document.getElementById('planningDesignFeeMethod').value;
-    let planningDesignFee = 0;
+    let planningDesignFeeBase = 0;
     let planningMethod = '';
     if (planningDesignFeeMethod === 'percentage') {
         const percent = parseFloat(document.getElementById('planningDesignPercentage').value) || 0;
-        planningDesignFee = Math.round(totalConstruction * (percent / 100));
+        planningDesignFeeBase = totalConstruction * (percent / 100);
         planningMethod = `${percent}%`;
     } else {
-        planningDesignFee = Math.round(parseFloat(document.getElementById('planningDesignFixed').value) || 0);
+        planningDesignFeeBase = parseFloat(document.getElementById('planningDesignFixed').value) || 0;
         planningMethod = 'fixed';
     }
+    const planningDesignFeeVAT = document.getElementById('planningDesignVAT').checked ? planningDesignFeeBase * 0.20 : 0;
+    const planningDesignFee = Math.round(planningDesignFeeBase + planningDesignFeeVAT);
     
+    // Warrant Design with VAT
     const warrantDesignFeeMethod = document.getElementById('warrantDesignFeeMethod').value;
-    let warrantDesignFee = 0;
+    let warrantDesignFeeBase = 0;
     let warrantMethod = '';
     if (warrantDesignFeeMethod === 'percentage') {
         const percent = parseFloat(document.getElementById('warrantDesignPercentage').value) || 0;
-        warrantDesignFee = Math.round(totalConstruction * (percent / 100));
+        warrantDesignFeeBase = totalConstruction * (percent / 100);
         warrantMethod = `${percent}%`;
     } else {
-        warrantDesignFee = Math.round(parseFloat(document.getElementById('warrantDesignFixed').value) || 0);
+        warrantDesignFeeBase = parseFloat(document.getElementById('warrantDesignFixed').value) || 0;
         warrantMethod = 'fixed';
     }
+    const warrantDesignFeeVAT = document.getElementById('warrantDesignVAT').checked ? warrantDesignFeeBase * 0.20 : 0;
+    const warrantDesignFee = Math.round(warrantDesignFeeBase + warrantDesignFeeVAT);
     
+    // Tender with VAT
     const tenderFeeMethod = document.getElementById('tenderFeeMethod').value;
-    let tenderFee = 0;
+    let tenderFeeBase = 0;
     let tenderMethod = '';
     if (tenderFeeMethod === 'percentage') {
         const percent = parseFloat(document.getElementById('tenderPercentage').value) || 0;
-        tenderFee = Math.round(totalConstruction * (percent / 100));
+        tenderFeeBase = totalConstruction * (percent / 100);
         tenderMethod = `${percent}%`;
     } else {
-        tenderFee = Math.round(parseFloat(document.getElementById('tenderFixed').value) || 0);
+        tenderFeeBase = parseFloat(document.getElementById('tenderFixed').value) || 0;
         tenderMethod = 'fixed';
     }
+    const tenderFeeVAT = document.getElementById('tenderVAT').checked ? tenderFeeBase * 0.20 : 0;
+    const tenderFee = Math.round(tenderFeeBase + tenderFeeVAT);
     
-    let contractAdminFee = 0;
+    // Contract Admin with VAT
+    let contractAdminFeeBase = 0;
     let constructionMethod = '';
     const contractAdminCheckbox = document.getElementById('includeContractAdmin');
     if (contractAdminCheckbox && contractAdminCheckbox.checked) {
         const method = document.getElementById('contractAdminFeeMethod').value;
         if (method === 'percentage') {
             const percent = parseFloat(document.getElementById('contractAdminPercentage').value) || 0;
-            contractAdminFee = Math.round(totalConstruction * (percent / 100));
+            contractAdminFeeBase = totalConstruction * (percent / 100);
             constructionMethod = `${percent}%`;
         } else if (method === 'fixed') {
-            contractAdminFee = Math.round(parseFloat(document.getElementById('contractAdminFixed').value) || 0);
+            contractAdminFeeBase = parseFloat(document.getElementById('contractAdminFixed').value) || 0;
             constructionMethod = 'fixed';
         } else if (method === 'hourly') {
             const rate = parseFloat(document.getElementById('contractAdminHourlyRate').value) || 0;
             const hours = parseFloat(document.getElementById('contractAdminHours').value) || 0;
-            contractAdminFee = Math.round(rate * hours);
+            contractAdminFeeBase = rate * hours;
             constructionMethod = `£${rate}/hr × ${hours}hrs`;
         } else if (method === 'weekly') {
             const rate = parseFloat(document.getElementById('contractAdminWeeklyRate').value) || 0;
             const weeks = parseFloat(document.getElementById('contractAdminWeeks').value) || 0;
-            contractAdminFee = Math.round(rate * weeks);
+            contractAdminFeeBase = rate * weeks;
             constructionMethod = `£${rate}/wk × ${weeks}wks`;
         }
     }
+    const contractAdminFeeVAT = document.getElementById('contractAdminVAT').checked ? contractAdminFeeBase * 0.20 : 0;
+    const contractAdminFee = Math.round(contractAdminFeeBase + contractAdminFeeVAT);
     
     const planningFee = document.getElementById('planningRequired').checked ? 
         Math.round(parseFloat(document.getElementById('planningFee').value) || 0) : 0;
@@ -1688,8 +1719,8 @@ function submitEmailForm(event) {
             billOfQuantities: calcData.billOfQuantities,
             engineerFee: calcData.engineerFee,
             conceptFee: calcData.conceptFee,
-            planningFee: calcData.planningDesignFee,
-            warrantFee: calcData.warrantDesignFee,
+            architectPlanningFee: calcData.planningDesignFee,
+            architectWarrantFee: calcData.warrantDesignFee,
             tenderFee: calcData.tenderFee,
             constructionFee: calcData.contractAdminFee,
             conceptMethod: calcData.conceptMethod,
@@ -1702,7 +1733,6 @@ function submitEmailForm(event) {
             // Statutory Fees
             planningPermissionFee: calcData.planningFee,
             buildingWarrantFee: calcData.warrantFee,
-            statutoryFees: calcData.planningFee + calcData.warrantFee,
             
             // Summary
             totalFees: calcData.totalFees
@@ -1744,11 +1774,3 @@ document.getElementById('emailModal')?.addEventListener('click', function(e) {
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
