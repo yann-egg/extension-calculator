@@ -1488,31 +1488,28 @@ function collectData() {
     // Contract Admin with VAT
     let contractAdminFeeBase = 0;
     let constructionMethod = '';
-    const contractAdminCheckbox = document.getElementById('includeContractAdmin');
-    if (contractAdminCheckbox && contractAdminCheckbox.checked) {
-        const method = document.getElementById('contractAdminFeeMethod').value;
-        if (method === 'percentage') {
-            const percent = parseFloat(document.getElementById('contractAdminPercentage').value) || 0;
-            contractAdminFeeBase = totalConstruction * (percent / 100);
-            constructionMethod = `${percent}%`;
-        } else if (method === 'fixed') {
-            contractAdminFeeBase = parseFloat(document.getElementById('contractAdminFixed').value) || 0;
-            constructionMethod = 'fixed';
-        } else if (method === 'hourly') {
-            const rate = parseFloat(document.getElementById('contractAdminHourlyRate').value) || 0;
-            const hours = parseFloat(document.getElementById('contractAdminHours').value) || 0;
-            contractAdminFeeBase = rate * hours;
-            constructionMethod = `£${rate}/hr × ${hours}hrs`;
-        } else if (method === 'weekly') {
-            const rate = parseFloat(document.getElementById('contractAdminWeeklyRate').value) || 0;
-            const weeks = parseFloat(document.getElementById('contractAdminWeeks').value) || 0;
-            contractAdminFeeBase = rate * weeks;
-            constructionMethod = `£${rate}/wk × ${weeks}wks`;
-        }
+    const method = document.getElementById('contractAdminFeeMethod').value;
+    if (method === 'percentage') {
+        const percent = parseFloat(document.getElementById('contractAdminPercentage').value) || 0;
+        contractAdminFeeBase = totalConstruction * (percent / 100);
+        constructionMethod = `${percent}%`;
+    } else if (method === 'fixed') {
+        contractAdminFeeBase = parseFloat(document.getElementById('contractAdminFixed').value) || 0;
+        constructionMethod = 'fixed';
+    } else if (method === 'hourly') {
+        const rate = parseFloat(document.getElementById('contractAdminHourlyRate').value) || 0;
+        const hours = parseFloat(document.getElementById('contractAdminHours').value) || 0;
+        contractAdminFeeBase = rate * hours;
+        constructionMethod = `£${rate}/hr × ${hours}hrs`;
+    } else if (method === 'weekly') {
+        const rate = parseFloat(document.getElementById('contractAdminWeeklyRate').value) || 0;
+        const weeks = parseFloat(document.getElementById('contractAdminWeeks').value) || 0;
+        contractAdminFeeBase = rate * weeks;
+        constructionMethod = `£${rate}/wk × ${weeks}wks`;
     }
     const contractAdminFeeVAT = document.getElementById('contractAdminVAT').checked ? contractAdminFeeBase * 0.20 : 0;
     const contractAdminFee = Math.round(contractAdminFeeBase + contractAdminFeeVAT);
-    
+       
     const planningFee = document.getElementById('planningRequired').checked ? 
         Math.round(parseFloat(document.getElementById('planningFee').value) || 0) : 0;
     const warrantFee = document.getElementById('warrantRequired').checked ? 
@@ -1774,6 +1771,7 @@ document.getElementById('emailModal')?.addEventListener('click', function(e) {
     </script>
 </body>
 </html>
+
 
 
 
