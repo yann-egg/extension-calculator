@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -466,12 +467,22 @@
                 <strong>Architect fees by RIBA stage:</strong> Fees can be calculated as percentage of construction cost or as fixed fees for each stage. Total fees across all stages typically sum between 8-15% of construction cost (for listed buildings up to 17% and higher). The smaller project potentially the higher fees and vice versa.
             </div>
             
+            <!-- Architect Fee Tier Display -->
+            <div id="architectFeeTier" style="background: #f9f9f9; padding: 15px; margin: 20px 0; border-radius: 4px; border-left: 4px solid #191919;">
+                <div style="font-weight: 500; margin-bottom: 5px; font-size: 0.95rem;">Architect Fee Tier:</div>
+                <div id="tierText" style="font-size: 1.1rem; color: #191919; font-weight: 400;">Calculating...</div>
+                <div id="tierBreakdown" style="margin-top: 10px; font-size: 0.85rem; color: #666; line-height: 1.7;">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+            
             <div class="fee-stage">
                 <div class="fee-stage-title">Concept Design (RIBA Stage 2)</div>
                 <div class="input-group">
                     <label>Calculation Method</label>
                     <select id="conceptFeeMethod">
-                        <option value="percentage">Percentage of construction cost</option>
+                        <option value="percentage-auto">Auto % (tier-based)</option>
+                        <option value="percentage-custom">Custom %</option>
                         <option value="fixed">Fixed fee</option>
                     </select>
                 </div>
@@ -494,7 +505,8 @@
                 <div class="input-group">
                     <label>Calculation Method</label>
                     <select id="planningDesignFeeMethod">
-                        <option value="percentage">Percentage of construction cost</option>
+                        <option value="percentage-auto">Auto % (tier-based)</option>
+                        <option value="percentage-custom">Custom %</option>
                         <option value="fixed">Fixed fee</option>
                     </select>
                 </div>
@@ -517,7 +529,8 @@
                 <div class="input-group">
                     <label>Calculation Method</label>
                     <select id="warrantDesignFeeMethod">
-                        <option value="percentage">Percentage of construction cost</option>
+                        <option value="percentage-auto">Auto % (tier-based)</option>
+                        <option value="percentage-custom">Custom %</option>
                         <option value="fixed">Fixed fee</option>
                     </select>
                 </div>
@@ -540,7 +553,8 @@
                 <div class="input-group">
                     <label>Calculation Method</label>
                     <select id="tenderFeeMethod">
-                        <option value="percentage">Percentage of construction cost</option>
+                        <option value="percentage-auto">Auto % (tier-based)</option>
+                        <option value="percentage-custom">Custom %</option>
                         <option value="fixed">Fixed fee</option>
                     </select>
                 </div>
@@ -563,7 +577,8 @@
     <div class="input-group">
         <label>Calculation Method</label>
         <select id="contractAdminFeeMethod">
-            <option value="percentage">Percentage of construction cost</option>
+            <option value="percentage-auto">Auto % (tier-based)</option>
+            <option value="percentage-custom">Custom %</option>
             <option value="fixed">Fixed fee</option>
             <option value="hourly">Hourly rate</option>
             <option value="weekly">Weekly rate</option>
@@ -1008,7 +1023,7 @@ function setupFeeMethodToggle(methodId, percentageGroupId, fixedGroupId, hourlyG
         if (hourlyGroup) hourlyGroup.style.display = 'none';
         if (weeklyGroup) weeklyGroup.style.display = 'none';
         
-        if (this.value === 'percentage') {
+        if (this.value === 'percentage-auto' || this.value === 'percentage-custom') {
             percentageGroup.style.display = 'block';
         } else if (this.value === 'fixed') {
             fixedGroup.style.display = 'block';
@@ -1032,6 +1047,113 @@ document.querySelectorAll('input, select').forEach(element => {
     element.addEventListener('input', calculate);
     element.addEventListener('change', calculate);
 });
+
+// ========================================
+// TIERED ARCHITECT FEE SYSTEM (2026)
+// ========================================
+
+function getArchitectFeeTier(constructionCost) {
+    if (constructionCost < 50000) {
+        return {
+            name: 'Under £50k',
+            totalPercent: 17,
+            range: '< £50,000',
+            description: 'Small projects require proportionally more design time'
+        };
+    } else if (constructionCost < 100000) {
+        return {
+            name: '£50k - £100k',
+            totalPercent: 15,
+            range: '£50,000 - £100,000',
+            description: 'Typical extension range'
+        };
+    } else if (constructionCost < 250000) {
+        return {
+            name: '£100k - £250k',
+            totalPercent: 13,
+            range: '£100,000 - £250,000',
+            description: 'Larger projects with economies of scale'
+        };
+    } else if (constructionCost < 500000) {
+        return {
+            name: '£250k - £500k',
+            totalPercent: 10,
+            range: '£250,000 - £500,000',
+            description: 'Significant projects'
+        };
+    } else {
+        return {
+            name: '£500k - £1M+',
+            totalPercent: 8,
+            range: '£500,000+',
+            description: 'Large projects with best economies of scale'
+        };
+    }
+}
+
+function getTieredPercentages(constructionCost) {
+    const tier = getArchitectFeeTier(constructionCost);
+    const totalPercent = tier.totalPercent;
+    
+    // Stage distribution (as % of total architect fee)
+    // Based on industry research: Warrant is most intensive stage
+    return {
+        tier: tier,
+        concept: (totalPercent * 0.15).toFixed(2),       // 15% of total
+        planning: (totalPercent * 0.20).toFixed(2),      // 20% of total
+        warrant: (totalPercent * 0.37).toFixed(2),       // 37% of total
+        tender: (totalPercent * 0.08).toFixed(2),        // 8% of total
+        construction: (totalPercent * 0.20).toFixed(2)   // 20% of total
+    };
+}
+
+function updateTierDisplay(constructionCost) {
+    const percentages = getTieredPercentages(constructionCost);
+    const tier = percentages.tier;
+    
+    document.getElementById('tierText').innerHTML = 
+        '<strong>' + tier.name + '</strong> (' + tier.range + ') → <strong>' + tier.totalPercent + '%</strong> total architect fee';
+    
+    document.getElementById('tierBreakdown').innerHTML = 
+        '<div><em>' + tier.description + '</em></div>' +
+        '<div style="margin-top: 8px;">' +
+        '<strong>Stage breakdown:</strong><br>' +
+        '• Concept Design: ' + percentages.concept + '%<br>' +
+        '• Planning Application: ' + percentages.planning + '%<br>' +
+        '• Building Warrant: ' + percentages.warrant + '%<br>' +
+        '• Tender Support: ' + percentages.tender + '%<br>' +
+        '• Construction Oversight: ' + percentages.construction + '%' +
+        '</div>';
+}
+
+function updateAutoPercentages(constructionCost) {
+    const percentages = getTieredPercentages(constructionCost);
+    
+    // Update Concept Design
+    if (document.getElementById('conceptFeeMethod').value === 'percentage-auto') {
+        document.getElementById('conceptPercentage').value = percentages.concept;
+    }
+    
+    // Update Planning Application
+    if (document.getElementById('planningDesignFeeMethod').value === 'percentage-auto') {
+        document.getElementById('planningDesignPercentage').value = percentages.planning;
+    }
+    
+    // Update Building Warrant
+    if (document.getElementById('warrantDesignFeeMethod').value === 'percentage-auto') {
+        document.getElementById('warrantDesignPercentage').value = percentages.warrant;
+    }
+    
+    // Update Tender Support
+    if (document.getElementById('tenderFeeMethod').value === 'percentage-auto') {
+        document.getElementById('tenderPercentage').value = percentages.tender;
+    }
+    
+    // Update Construction Oversight
+    if (document.getElementById('contractAdminFeeMethod').value === 'percentage-auto') {
+        document.getElementById('contractAdminPercentage').value = percentages.construction;
+    }
+}
 
 function calculate() {
     const extensionType = document.getElementById('extensionType').value;
@@ -1090,6 +1212,10 @@ document.getElementById('contingencyPercent').addEventListener('change', functio
     // Total construction cost
     const totalConstruction = buildCost + kitchenCost + bathroomCost + openingsCost;
     
+    // Update tier display and auto percentages
+    updateTierDisplay(totalConstruction);
+    updateAutoPercentages(totalConstruction);
+    
     // Contingency (on construction cost only)
     const contingencyPercent = parseFloat(document.getElementById('contingencyPercent').value);
     const contingencyCost = totalConstruction * (contingencyPercent / 100);
@@ -1130,11 +1256,12 @@ const engineerFee = engineerFeeBase + engineerFeeVAT;
 // Architect fees by stage with VAT
 let conceptFeeBase = 0;
 const conceptMethod = document.getElementById('conceptFeeMethod').value;
-if (conceptMethod === 'percentage') {
+if (conceptMethod === 'percentage-auto' || conceptMethod === 'percentage-custom') {
     const conceptPercent = parseFloat(document.getElementById('conceptPercentage').value) || 0;
     conceptFeeBase = totalConstruction * (conceptPercent / 100);
-    document.getElementById('conceptMethod').textContent = `(${conceptPercent}%)`;
-} else {
+    const methodLabel = conceptMethod === 'percentage-auto' ? 'auto' : 'custom';
+    document.getElementById('conceptMethod').textContent = `(${conceptPercent}% ${methodLabel})`;
+} else if (conceptMethod === 'fixed') {
     conceptFeeBase = parseFloat(document.getElementById('conceptFixed').value) || 0;
     document.getElementById('conceptMethod').textContent = '(fixed)';
 }
@@ -1143,11 +1270,12 @@ const conceptFee = conceptFeeBase + conceptFeeVAT;
 
 let planningDesignFeeBase = 0;
 const planningDesignMethod = document.getElementById('planningDesignFeeMethod').value;
-if (planningDesignMethod === 'percentage') {
+if (planningDesignMethod === 'percentage-auto' || planningDesignMethod === 'percentage-custom') {
     const planningDesignPercent = parseFloat(document.getElementById('planningDesignPercentage').value) || 0;
     planningDesignFeeBase = totalConstruction * (planningDesignPercent / 100);
-    document.getElementById('planningDesignMethod').textContent = `(${planningDesignPercent}%)`;
-} else {
+    const methodLabel = planningDesignMethod === 'percentage-auto' ? 'auto' : 'custom';
+    document.getElementById('planningDesignMethod').textContent = `(${planningDesignPercent}% ${methodLabel})`;
+} else if (planningDesignMethod === 'fixed') {
     planningDesignFeeBase = parseFloat(document.getElementById('planningDesignFixed').value) || 0;
     document.getElementById('planningDesignMethod').textContent = '(fixed)';
 }
@@ -1156,11 +1284,12 @@ const planningDesignFee = planningDesignFeeBase + planningDesignFeeVAT;
 
 let warrantDesignFeeBase = 0;
 const warrantDesignMethod = document.getElementById('warrantDesignFeeMethod').value;
-if (warrantDesignMethod === 'percentage') {
+if (warrantDesignMethod === 'percentage-auto' || warrantDesignMethod === 'percentage-custom') {
     const warrantDesignPercent = parseFloat(document.getElementById('warrantDesignPercentage').value) || 0;
     warrantDesignFeeBase = totalConstruction * (warrantDesignPercent / 100);
-    document.getElementById('warrantDesignMethod').textContent = `(${warrantDesignPercent}%)`;
-} else {
+    const methodLabel = warrantDesignMethod === 'percentage-auto' ? 'auto' : 'custom';
+    document.getElementById('warrantDesignMethod').textContent = `(${warrantDesignPercent}% ${methodLabel})`;
+} else if (warrantDesignMethod === 'fixed') {
     warrantDesignFeeBase = parseFloat(document.getElementById('warrantDesignFixed').value) || 0;
     document.getElementById('warrantDesignMethod').textContent = '(fixed)';
 }
@@ -1170,11 +1299,12 @@ const warrantDesignFee = warrantDesignFeeBase + warrantDesignFeeVAT;
 // Tender stage with VAT
 let tenderFeeBase = 0;
 const tenderMethod = document.getElementById('tenderFeeMethod').value;
-if (tenderMethod === 'percentage') {
+if (tenderMethod === 'percentage-auto' || tenderMethod === 'percentage-custom') {
     const tenderPercent = parseFloat(document.getElementById('tenderPercentage').value) || 0;
     tenderFeeBase = totalConstruction * (tenderPercent / 100);
-    document.getElementById('tenderMethod').textContent = `(${tenderPercent}%)`;
-} else {
+    const methodLabel = tenderMethod === 'percentage-auto' ? 'auto' : 'custom';
+    document.getElementById('tenderMethod').textContent = `(${tenderPercent}% ${methodLabel})`;
+} else if (tenderMethod === 'fixed') {
     tenderFeeBase = parseFloat(document.getElementById('tenderFixed').value) || 0;
     document.getElementById('tenderMethod').textContent = '(fixed)';
 }
@@ -1184,10 +1314,11 @@ const tenderFee = tenderFeeBase + tenderFeeVAT;
 // Contract Admin stage with VAT
 let contractAdminFeeBase = 0;
 const contractAdminMethod = document.getElementById('contractAdminFeeMethod').value;
-if (contractAdminMethod === 'percentage') {
+if (contractAdminMethod === 'percentage-auto' || contractAdminMethod === 'percentage-custom') {
     const contractAdminPercent = parseFloat(document.getElementById('contractAdminPercentage').value) || 0;
     contractAdminFeeBase = totalConstruction * (contractAdminPercent / 100);
-    document.getElementById('contractAdminMethod').textContent = `(${contractAdminPercent}%)`;
+    const methodLabel = contractAdminMethod === 'percentage-auto' ? 'auto' : 'custom';
+    document.getElementById('contractAdminMethod').textContent = `(${contractAdminPercent}% ${methodLabel})`;
 } else if (contractAdminMethod === 'fixed') {
     contractAdminFeeBase = parseFloat(document.getElementById('contractAdminFixed').value) || 0;
     document.getElementById('contractAdminMethod').textContent = '(fixed)';
@@ -1429,11 +1560,11 @@ function collectData() {
     const conceptFeeMethod = document.getElementById('conceptFeeMethod').value;
     let conceptFeeBase = 0;
     let conceptMethod = '';
-    if (conceptFeeMethod === 'percentage') {
+    if (conceptFeeMethod === 'percentage-auto' || conceptFeeMethod === 'percentage-custom') {
         const percent = parseFloat(document.getElementById('conceptPercentage').value) || 0;
         conceptFeeBase = totalConstruction * (percent / 100);
-        conceptMethod = `${percent}%`;
-    } else {
+        conceptMethod = conceptFeeMethod === 'percentage-auto' ? `${percent}% auto` : `${percent}% custom`;
+    } else if (conceptFeeMethod === 'fixed') {
         conceptFeeBase = parseFloat(document.getElementById('conceptFixed').value) || 0;
         conceptMethod = 'fixed';
     }
@@ -1444,11 +1575,11 @@ function collectData() {
     const planningDesignFeeMethod = document.getElementById('planningDesignFeeMethod').value;
     let planningDesignFeeBase = 0;
     let planningMethod = '';
-    if (planningDesignFeeMethod === 'percentage') {
+    if (planningDesignFeeMethod === 'percentage-auto' || planningDesignFeeMethod === 'percentage-custom') {
         const percent = parseFloat(document.getElementById('planningDesignPercentage').value) || 0;
         planningDesignFeeBase = totalConstruction * (percent / 100);
-        planningMethod = `${percent}%`;
-    } else {
+        planningMethod = planningDesignFeeMethod === 'percentage-auto' ? `${percent}% auto` : `${percent}% custom`;
+    } else if (planningDesignFeeMethod === 'fixed') {
         planningDesignFeeBase = parseFloat(document.getElementById('planningDesignFixed').value) || 0;
         planningMethod = 'fixed';
     }
@@ -1459,11 +1590,11 @@ function collectData() {
     const warrantDesignFeeMethod = document.getElementById('warrantDesignFeeMethod').value;
     let warrantDesignFeeBase = 0;
     let warrantMethod = '';
-    if (warrantDesignFeeMethod === 'percentage') {
+    if (warrantDesignFeeMethod === 'percentage-auto' || warrantDesignFeeMethod === 'percentage-custom') {
         const percent = parseFloat(document.getElementById('warrantDesignPercentage').value) || 0;
         warrantDesignFeeBase = totalConstruction * (percent / 100);
-        warrantMethod = `${percent}%`;
-    } else {
+        warrantMethod = warrantDesignFeeMethod === 'percentage-auto' ? `${percent}% auto` : `${percent}% custom`;
+    } else if (warrantDesignFeeMethod === 'fixed') {
         warrantDesignFeeBase = parseFloat(document.getElementById('warrantDesignFixed').value) || 0;
         warrantMethod = 'fixed';
     }
@@ -1474,11 +1605,11 @@ function collectData() {
     const tenderFeeMethod = document.getElementById('tenderFeeMethod').value;
     let tenderFeeBase = 0;
     let tenderMethod = '';
-    if (tenderFeeMethod === 'percentage') {
+    if (tenderFeeMethod === 'percentage-auto' || tenderFeeMethod === 'percentage-custom') {
         const percent = parseFloat(document.getElementById('tenderPercentage').value) || 0;
         tenderFeeBase = totalConstruction * (percent / 100);
-        tenderMethod = `${percent}%`;
-    } else {
+        tenderMethod = tenderFeeMethod === 'percentage-auto' ? `${percent}% auto` : `${percent}% custom`;
+    } else if (tenderFeeMethod === 'fixed') {
         tenderFeeBase = parseFloat(document.getElementById('tenderFixed').value) || 0;
         tenderMethod = 'fixed';
     }
@@ -1489,10 +1620,10 @@ function collectData() {
     let contractAdminFeeBase = 0;
     let constructionMethod = '';
     const method = document.getElementById('contractAdminFeeMethod').value;
-    if (method === 'percentage') {
+    if (method === 'percentage-auto' || method === 'percentage-custom') {
         const percent = parseFloat(document.getElementById('contractAdminPercentage').value) || 0;
         contractAdminFeeBase = totalConstruction * (percent / 100);
-        constructionMethod = `${percent}%`;
+        constructionMethod = method === 'percentage-auto' ? `${percent}% auto` : `${percent}% custom`;
     } else if (method === 'fixed') {
         contractAdminFeeBase = parseFloat(document.getElementById('contractAdminFixed').value) || 0;
         constructionMethod = 'fixed';
@@ -1606,32 +1737,32 @@ function resetForm() {
         document.getElementById('billOfQuantitiesCost').value = '1000';
         document.getElementById('engineerFee').value = '1500';
         
-        document.getElementById('conceptFeeMethod').value = 'percentage';
-        document.getElementById('conceptPercentage').value = '2.5';
+        document.getElementById('conceptFeeMethod').value = 'percentage-auto';
+        document.getElementById('conceptPercentage').value = '2.25';
         document.getElementById('conceptFixed').value = '';
         document.getElementById('conceptPercentageGroup').style.display = 'block';
         document.getElementById('conceptFixedGroup').style.display = 'none';
         
-        document.getElementById('planningDesignFeeMethod').value = 'percentage';
-        document.getElementById('planningDesignPercentage').value = '3.5';
+        document.getElementById('planningDesignFeeMethod').value = 'percentage-auto';
+        document.getElementById('planningDesignPercentage').value = '3.00';
         document.getElementById('planningDesignFixed').value = '';
         document.getElementById('planningDesignPercentageGroup').style.display = 'block';
         document.getElementById('planningDesignFixedGroup').style.display = 'none';
         
-        document.getElementById('warrantDesignFeeMethod').value = 'percentage';
-        document.getElementById('warrantDesignPercentage').value = '4.0';
+        document.getElementById('warrantDesignFeeMethod').value = 'percentage-auto';
+        document.getElementById('warrantDesignPercentage').value = '5.55';
         document.getElementById('warrantDesignFixed').value = '';
         document.getElementById('warrantDesignPercentageGroup').style.display = 'block';
         document.getElementById('warrantDesignFixedGroup').style.display = 'none';
         
-        document.getElementById('tenderFeeMethod').value = 'percentage';
-        document.getElementById('tenderPercentage').value = '1.5';
+        document.getElementById('tenderFeeMethod').value = 'percentage-auto';
+        document.getElementById('tenderPercentage').value = '1.20';
         document.getElementById('tenderFixed').value = '';
         document.getElementById('tenderPercentageGroup').style.display = 'block';
         document.getElementById('tenderFixedGroup').style.display = 'none';
         
-        document.getElementById('contractAdminFeeMethod').value = 'percentage';
-        document.getElementById('contractAdminPercentage').value = '2.0';
+        document.getElementById('contractAdminFeeMethod').value = 'percentage-auto';
+        document.getElementById('contractAdminPercentage').value = '3.00';
         document.getElementById('contractAdminFixed').value = '';
         document.getElementById('contractAdminHourlyRate').value = '75';
         document.getElementById('contractAdminHours').value = '40';
@@ -1771,7 +1902,3 @@ document.getElementById('emailModal')?.addEventListener('click', function(e) {
     </script>
 </body>
 </html>
-
-
-
-
