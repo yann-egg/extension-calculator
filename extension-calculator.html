@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -435,15 +434,38 @@
         <div class="form-section">
             <div class="section-title">Professional Fees</div>
             
+            <!-- Professional Fees Disclaimer -->
+            <div style="background: #f9f9f9; border-left: 3px solid #191919; padding: 12px 15px; margin: 15px 0 20px 0; border-radius: 4px;">
+                <p style="font-size: 0.85rem; line-height: 1.5; margin: 0; color: #555;">
+                    <strong style="color: #191919;">Note:</strong> 
+                    Structural Engineer and Quantity Surveyor fees shown are indicative estimates based on typical UK market rates (2026). 
+                    Actual fees vary depending on project complexity, scope of services required, and individual consultant pricing.
+                </p>
+            </div>
+            
             <div class="checkbox-group">
                 <input type="checkbox" id="includeEngineer">
                 <label for="includeEngineer">Structural Engineer</label>
             </div>
             <div class="sub-input" id="engineerFeeInput" style="display: none;">
-                <label>Fee (£)</label>
-                <input type="number" id="engineerFee" placeholder="900 - 2,000" min="0" value="1500">
-                <div class="hint">Typical range: £900 - £2,000</div>
-                <div class="checkbox-group" style="margin-left: 0; margin-top: 10px;">
+                <label>Fee Calculation Method</label>
+                <select id="engineerFeeMethod" onchange="setupFeeMethodToggle()" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Poppins', sans-serif;">
+                    <option value="tier-based">Tier-Based % (recommended)</option>
+                    <option value="custom">Custom £ Amount</option>
+                </select>
+                
+                <div id="engineerTierBasedGroup" style="display: block;">
+                    <div class="hint" style="color: #666; font-style: italic; margin-bottom: 10px;">
+                        Fee calculated automatically based on construction cost tier. Typical residential extensions: £1,200-£5,000.
+                    </div>
+                </div>
+                
+                <div id="engineerCustomGroup" style="display: none;">
+                    <label>Custom Fee (£)</label>
+                    <input type="number" id="engineerCustomFee" placeholder="e.g. 1,500" min="0" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+                </div>
+                
+                <div class="checkbox-group" style="margin-left: 0;">
                     <input type="checkbox" id="engineerVAT" checked>
                     <label for="engineerVAT">VAT Registered (add 20% VAT)</label>
                 </div>
@@ -451,13 +473,27 @@
 
             <div class="checkbox-group">
                 <input type="checkbox" id="billOfQuantities">
-                <label for="billOfQuantities">Bill of Quantities</label>
+                <label for="billOfQuantities">Bill of Quantities (Quantity Surveyor)</label>
             </div>
             <div class="sub-input" id="billOfQuantitiesInput" style="display: none;">
-                <label>Cost (£)</label>
-                <input type="number" id="billOfQuantitiesCost" placeholder="500 - 2,000" min="0" value="1000">
-                <div class="hint">Typical range: £500 - £2,000</div>
-                <div class="checkbox-group" style="margin-left: 0; margin-top: 10px;">
+                <label>Fee Calculation Method</label>
+                <select id="boqFeeMethod" onchange="setupFeeMethodToggle()" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Poppins', sans-serif;">
+                    <option value="tier-based">Tier-Based % (recommended)</option>
+                    <option value="custom">Custom £ Amount</option>
+                </select>
+                
+                <div id="boqTierBasedGroup" style="display: block;">
+                    <div class="hint" style="color: #666; font-style: italic; margin-bottom: 10px;">
+                        Fee calculated automatically based on construction cost tier. Optional for projects under £100k.
+                    </div>
+                </div>
+                
+                <div id="boqCustomGroup" style="display: none;">
+                    <label>Custom Fee (£)</label>
+                    <input type="number" id="boqCustomFee" placeholder="e.g. 1,000" min="0" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+                </div>
+                
+                <div class="checkbox-group" style="margin-left: 0;">
                     <input type="checkbox" id="boqVAT" checked>
                     <label for="boqVAT">VAT Registered (add 20% VAT)</label>
                 </div>
@@ -740,12 +776,12 @@
     
     <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #19191920;">
         <div class="result-row">
-            <span class="result-label">Bill of Quantities</span>
+            <span class="result-label">Bill of Quantities <span id="boqMethod" style="color: #888; font-size: 0.85em;"></span></span>
             <span class="result-value" id="billOfQuantitiesDisplay">£0</span>
         </div>
         
         <div class="result-row">
-            <span class="result-label">Structural Engineer</span>
+            <span class="result-label">Structural Engineer <span id="engineerMethod" style="color: #888; font-size: 0.85em;"></span></span>
             <span class="result-value" id="engineerDisplay">£0</span>
         </div>
         
@@ -1042,6 +1078,27 @@ setupFeeMethodToggle('warrantDesignFeeMethod', 'warrantDesignPercentageGroup', '
 setupFeeMethodToggle('tenderFeeMethod', 'tenderPercentageGroup', 'tenderFixedGroup');
 setupFeeMethodToggle('contractAdminFeeMethod', 'contractAdminPercentageGroup', 'contractAdminFixedGroup', 'contractAdminHourlyGroup', 'contractAdminWeeklyGroup');
 
+// SE and QS simple toggle (tier-based vs custom)
+function setupSimpleFeeToggle(methodId, tierGroupId, customGroupId) {
+    const method = document.getElementById(methodId);
+    const tierGroup = document.getElementById(tierGroupId);
+    const customGroup = document.getElementById(customGroupId);
+    
+    method.addEventListener('change', function() {
+        if (this.value === 'tier-based') {
+            tierGroup.style.display = 'block';
+            customGroup.style.display = 'none';
+        } else {
+            tierGroup.style.display = 'none';
+            customGroup.style.display = 'block';
+        }
+        calculate();
+    });
+}
+
+setupSimpleFeeToggle('engineerFeeMethod', 'engineerTierBasedGroup', 'engineerCustomGroup');
+setupSimpleFeeToggle('boqFeeMethod', 'boqTierBasedGroup', 'boqCustomGroup');
+
 // Add event listeners to all inputs
 document.querySelectorAll('input, select').forEach(element => {
     element.addEventListener('input', calculate);
@@ -1056,7 +1113,7 @@ function getArchitectFeeTier(constructionCost) {
     if (constructionCost < 50000) {
         return {
             name: 'Under £50k',
-            totalPercent: 17,
+            totalPercent: 16,
             range: '< £50,000',
             description: 'Small projects require proportionally more design time'
         };
@@ -1105,6 +1162,120 @@ function getTieredPercentages(constructionCost) {
         tender: (totalPercent * 0.08).toFixed(2),        // 8% of total
         construction: (totalPercent * 0.20).toFixed(2)   // 20% of total
     };
+}
+
+// ============================================================
+// STRUCTURAL ENGINEER TIER SYSTEM
+// ============================================================
+function getStructuralEngineerTier(constructionCost) {
+    if (constructionCost < 50000) {
+        return {
+            name: 'Under £50k',
+            percent: 3.5,
+            minFloor: 1200,
+            range: '< £50,000',
+            description: 'Small projects with minimum base fee'
+        };
+    } else if (constructionCost < 100000) {
+        return {
+            name: '£50k - £100k',
+            percent: 2.8,
+            minFloor: 1500,
+            range: '£50,000 - £100,000',
+            description: 'Typical extension range'
+        };
+    } else if (constructionCost < 250000) {
+        return {
+            name: '£100k - £250k',
+            percent: 2.2,
+            minFloor: 2500,
+            range: '£100,000 - £250,000',
+            description: 'Larger projects'
+        };
+    } else if (constructionCost < 500000) {
+        return {
+            name: '£250k - £500k',
+            percent: 1.8,
+            minFloor: 4500,
+            range: '£250,000 - £500,000',
+            description: 'Significant structural complexity'
+        };
+    } else {
+        return {
+            name: '£500k+',
+            percent: 1.5,
+            minFloor: 7500,
+            range: '£500,000+',
+            description: 'Large projects with economies of scale'
+        };
+    }
+}
+
+function calculateStructuralEngineerFee(constructionCost) {
+    const tier = getStructuralEngineerTier(constructionCost);
+    const percentageFee = Math.round(constructionCost * tier.percent / 100);
+    return Math.max(percentageFee, tier.minFloor);
+}
+
+// ============================================================
+// QUANTITY SURVEYOR TIER SYSTEM
+// ============================================================
+function getQuantitySurveyorTier(constructionCost) {
+    if (constructionCost < 50000) {
+        return {
+            name: 'Under £50k',
+            percent: 0,
+            minFloor: 500,
+            range: '< £50,000',
+            description: 'Optional - basic BoQ only (flat fee)',
+            note: 'optional'
+        };
+    } else if (constructionCost < 100000) {
+        return {
+            name: '£50k - £100k',
+            percent: 1.5,
+            minFloor: 750,
+            range: '£50,000 - £100,000',
+            description: 'Optional - BoQ + tender review',
+            note: 'optional'
+        };
+    } else if (constructionCost < 250000) {
+        return {
+            name: '£100k - £250k',
+            percent: 2.5,
+            minFloor: 2000,
+            range: '£100,000 - £250,000',
+            description: 'Recommended for cost control',
+            note: 'recommended'
+        };
+    } else if (constructionCost < 500000) {
+        return {
+            name: '£250k - £500k',
+            percent: 2.0,
+            minFloor: 5000,
+            range: '£250,000 - £500,000',
+            description: 'Standard practice',
+            note: 'standard'
+        };
+    } else {
+        return {
+            name: '£500k+',
+            percent: 1.8,
+            minFloor: 9000,
+            range: '£500,000+',
+            description: 'Essential for project control',
+            note: 'essential'
+        };
+    }
+}
+
+function calculateQuantitySurveyorFee(constructionCost) {
+    const tier = getQuantitySurveyorTier(constructionCost);
+    if (tier.percent === 0) {
+        return tier.minFloor; // Flat fee for small projects
+    }
+    const percentageFee = Math.round(constructionCost * tier.percent / 100);
+    return Math.max(percentageFee, tier.minFloor);
 }
 
 function updateTierDisplay(constructionCost) {
@@ -1243,15 +1414,45 @@ const groundSurveyBase = document.getElementById('groundSurvey').checked ?
 const groundSurveyVAT = document.getElementById('groundSurveyVAT').checked ? groundSurveyBase * 0.20 : 0;
 const groundSurvey = groundSurveyBase + groundSurveyVAT;
 
-const billOfQuantitiesBase = document.getElementById('billOfQuantities').checked ? 
-    (parseFloat(document.getElementById('billOfQuantitiesCost').value) || 0) : 0;
-const billOfQuantitiesVAT = document.getElementById('boqVAT').checked ? billOfQuantitiesBase * 0.20 : 0;
-const billOfQuantities = billOfQuantitiesBase + billOfQuantitiesVAT;
-
-const engineerFeeBase = document.getElementById('includeEngineer').checked ?
-    (parseFloat(document.getElementById('engineerFee').value) || 0) : 0;
+// STRUCTURAL ENGINEER - Tier-based or Custom
+let engineerFeeBase = 0;
+let engineerMethod = '';
+if (document.getElementById('includeEngineer').checked) {
+    const feeMethod = document.getElementById('engineerFeeMethod').value;
+    if (feeMethod === 'tier-based') {
+        engineerFeeBase = calculateStructuralEngineerFee(totalConstruction);
+        const seTier = getStructuralEngineerTier(totalConstruction);
+        const effectivePercent = ((engineerFeeBase / totalConstruction) * 100).toFixed(2);
+        engineerMethod = `(${effectivePercent}% tier-based)`;
+    } else {
+        engineerFeeBase = parseFloat(document.getElementById('engineerCustomFee').value) || 0;
+        engineerMethod = '(custom)';
+    }
+}
 const engineerFeeVAT = document.getElementById('engineerVAT').checked ? engineerFeeBase * 0.20 : 0;
 const engineerFee = engineerFeeBase + engineerFeeVAT;
+
+// QUANTITY SURVEYOR (Bill of Quantities) - Tier-based or Custom
+let billOfQuantitiesBase = 0;
+let boqMethod = '';
+if (document.getElementById('billOfQuantities').checked) {
+    const feeMethod = document.getElementById('boqFeeMethod').value;
+    if (feeMethod === 'tier-based') {
+        billOfQuantitiesBase = calculateQuantitySurveyorFee(totalConstruction);
+        const qsTier = getQuantitySurveyorTier(totalConstruction);
+        if (qsTier.percent === 0) {
+            boqMethod = `(flat £${qsTier.minFloor} - ${qsTier.note})`;
+        } else {
+            const effectivePercent = ((billOfQuantitiesBase / totalConstruction) * 100).toFixed(2);
+            boqMethod = `(${effectivePercent}% - ${qsTier.note})`;
+        }
+    } else {
+        billOfQuantitiesBase = parseFloat(document.getElementById('boqCustomFee').value) || 0;
+        boqMethod = '(custom)';
+    }
+}
+const billOfQuantitiesVAT = document.getElementById('boqVAT').checked ? billOfQuantitiesBase * 0.20 : 0;
+const billOfQuantities = billOfQuantitiesBase + billOfQuantitiesVAT;
 
 // Architect fees by stage with VAT
 let conceptFeeBase = 0;
@@ -1388,7 +1589,10 @@ if (document.getElementById('warrantRequired').checked) {
     document.getElementById('measuredSurveyDisplay').textContent = formatCurrency(measuredSurvey);
     document.getElementById('groundSurveyDisplay').textContent = formatCurrency(groundSurvey);
     document.getElementById('billOfQuantitiesDisplay').textContent = formatCurrency(billOfQuantities);
+    document.getElementById('boqMethod').textContent = boqMethod;
+    
     document.getElementById('engineerDisplay').textContent = formatCurrency(engineerFee);
+    document.getElementById('engineerMethod').textContent = engineerMethod;
     document.getElementById('conceptDisplay').textContent = formatCurrency(conceptFee);
     document.getElementById('planningDesignDisplay').textContent = formatCurrency(planningDesignFee);
     document.getElementById('warrantDesignDisplay').textContent = formatCurrency(warrantDesignFee);
@@ -1466,14 +1670,29 @@ function generateExcel() {
         ['Bathroom range: £7,000 - £10,000 (avg. £8,500)'],
         ['Structural openings: £3,000 - £5,000 per linear meter (avg. £4,000)'],
         ['Ordnance Survey Maps: £25 - £75'],
-        ['Bill of Quantities range: £500 - £2,000'],
         [''],
-        ['Architect fees by RIBA stage (total across all stages typically ~10% of construction cost):'],
-        ['- Concept Design (Stage 2): typically 2.0% of construction cost'],
-        ['- Planning Application (Stage 3): typically 2.5% of construction cost'],
-        ['- Building Warrant (Stage 4): typically 2.5% of construction cost'],
-        ['- Tender Support (Stage 5): typically 1.0% of construction cost'],
-        ['- Contract Administration (Stage 6): typically 2.0% or hourly/weekly rate'],
+        ['PROFESSIONAL FEES (2026 - tier-based on construction cost):'],
+        [''],
+        ['Architect fees by project size (total across all RIBA stages):'],
+        ['  < £50k: 16% | £50-100k: 15% | £100-250k: 13% | £250-500k: 10% | £500k+: 8%'],
+        [''],
+        ['Architect stage distribution (% of total architect fee):'],
+        ['  - Concept Design (Stage 2): 15%'],
+        ['  - Planning Application (Stage 3): 20%'],
+        ['  - Building Warrant (Stage 4): 37% (most intensive)'],
+        ['  - Tender Support (Stage 5): 8%'],
+        ['  - Construction Oversight (Stage 6): 20%'],
+        [''],
+        ['Structural Engineer fees (% of construction cost + minimum floor):'],
+        ['  < £50k: 3.5% min £1,200 | £50-100k: 2.8% min £1,500 | £100-250k: 2.2% min £2,500'],
+        ['  £250-500k: 1.8% min £4,500 | £500k+: 1.5% min £7,500'],
+        [''],
+        ['Quantity Surveyor fees (Bill of Quantities):'],
+        ['  < £50k: flat £500 (optional) | £50-100k: 1.5% min £750 (optional)'],
+        ['  £100-250k: 2.5% min £2,000 (recommended) | £250k+: 2.0-1.8% (standard/essential)'],
+        [''],
+        ['IMPORTANT: SE and QS fees are estimates only. Actual fees depend on project complexity,'],
+        ['scope of services, and individual consultant rates. Always obtain formal quotes.'],
         [''],
         ['This estimate is indicative and based on typical market rates for Scotland in 2026.'],
         ['Final costs depend on specification, site conditions, and contractor pricing.']
@@ -1545,14 +1764,28 @@ function collectData() {
     const groundSurveyVAT = document.getElementById('groundSurveyVAT').checked ? groundSurveyBase * 0.20 : 0;
     const groundSurvey = Math.round(groundSurveyBase + groundSurveyVAT);
 
-    // Professional fees with VAT
-    const billOfQuantitiesBase = document.getElementById('billOfQuantities').checked ? 
-        (parseFloat(document.getElementById('billOfQuantitiesCost').value) || 0) : 0;
+    // Professional fees with VAT - TIER-BASED OR CUSTOM
+    let billOfQuantitiesBase = 0;
+    if (document.getElementById('billOfQuantities').checked) {
+        const boqMethod = document.getElementById('boqFeeMethod').value;
+        if (boqMethod === 'tier-based') {
+            billOfQuantitiesBase = calculateQuantitySurveyorFee(totalConstruction);
+        } else {
+            billOfQuantitiesBase = parseFloat(document.getElementById('boqCustomFee').value) || 0;
+        }
+    }
     const billOfQuantitiesVAT = document.getElementById('boqVAT').checked ? billOfQuantitiesBase * 0.20 : 0;
     const billOfQuantities = Math.round(billOfQuantitiesBase + billOfQuantitiesVAT);
 
-    const engineerFeeBase = document.getElementById('includeEngineer').checked ?
-        (parseFloat(document.getElementById('engineerFee').value) || 0) : 0;
+    let engineerFeeBase = 0;
+    if (document.getElementById('includeEngineer').checked) {
+        const seMethod = document.getElementById('engineerFeeMethod').value;
+        if (seMethod === 'tier-based') {
+            engineerFeeBase = calculateStructuralEngineerFee(totalConstruction);
+        } else {
+            engineerFeeBase = parseFloat(document.getElementById('engineerCustomFee').value) || 0;
+        }
+    }
     const engineerFeeVAT = document.getElementById('engineerVAT').checked ? engineerFeeBase * 0.20 : 0;
     const engineerFee = Math.round(engineerFeeBase + engineerFeeVAT);
     
@@ -1734,8 +1967,17 @@ function resetForm() {
         document.getElementById('ordnanceMapsCost').value = '50';
         document.getElementById('measuredSurveyCost').value = '500';
         document.getElementById('groundSurveyCost').value = '800';
-        document.getElementById('billOfQuantitiesCost').value = '1000';
-        document.getElementById('engineerFee').value = '1500';
+        
+        // SE and QS defaults
+        document.getElementById('engineerFeeMethod').value = 'tier-based';
+        document.getElementById('engineerCustomFee').value = '';
+        document.getElementById('engineerTierBasedGroup').style.display = 'block';
+        document.getElementById('engineerCustomGroup').style.display = 'none';
+        
+        document.getElementById('boqFeeMethod').value = 'tier-based';
+        document.getElementById('boqCustomFee').value = '';
+        document.getElementById('boqTierBasedGroup').style.display = 'block';
+        document.getElementById('boqCustomGroup').style.display = 'none';
         
         document.getElementById('conceptFeeMethod').value = 'percentage-auto';
         document.getElementById('conceptPercentage').value = '2.25';
